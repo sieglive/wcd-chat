@@ -26,6 +26,7 @@ import * as O_O from 'underscore';
     cursor: pointer;
   }
   .container{
+    position: relative;
     display: inline-block;
     width: 100%;
     transition: background-color 0.4s;
@@ -36,6 +37,15 @@ import * as O_O from 'underscore';
     line-height: 100%;
     text-align: center;
     padding: 0 20px;
+  }
+  canvas{
+    position: absolute;
+    left:0;
+    top:0;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    backgroundColor: blue;
   }
   `]
 })
@@ -82,6 +92,7 @@ export class ButtonComponent implements OnInit {
     }
   }
 
+  @ViewChild('canvas') canvas; // get the canvas
 
   @HostListener('mouseenter') mouseenter = () => { this.buttonColor = 'black-l'; };
   @HostListener('mouseleave') mouseleave = () => { this.buttonColor = 'black'; };
