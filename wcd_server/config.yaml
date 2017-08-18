@@ -1,0 +1,9 @@
+mongo:
+    client:
+        prod: 'mongodb://esignPE:esignPE2017@10.24.139.60'
+        test: 'mongodb://esign:pe123123@10.10.20.197'
+        mypc: 'mongodb://esign:pe123123@10.10.20.197'
+    db:
+        prod: 'esign_v2_prod'
+        test: 'esign_test_v2'
+        mypc: 'esign_v2'
