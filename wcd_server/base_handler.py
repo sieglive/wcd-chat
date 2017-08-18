@@ -14,7 +14,14 @@ STATUS_DICT = dict([
     # Normal Error
     (3001, 'Username or password is invalid'),
     (3002, 'Account is inactivated.'),
-    (3003, 'Email not Register')])
+    (3003, 'Email not Register'),
+    (3004, 'Account is already exists, please login.'),
+    (3005, 'User\'s session key not exists, need to login.'),
+    (3006, 'User\'s session value not exists, need to login'),
+    (3007, 'Other people login this account, session is invalid.'),
+    (3008, 'User Permission Deny.'),
+    (3009, 'Not Regular Password'),
+    (3011, 'Account is not exists, please sign up.'),])
 
 
 def underline_to_camel(underline_format):
@@ -84,6 +91,8 @@ class ParseJSONError(HTTPError):
 class BaseHandler(RequestHandler):
     """Custom handler for other views module."""
     session = m_client.session
+    wcd_user = m_client.wcd_user
+    message_list = m_client.message_list
     # Set the public head here.
     # pub_head = dict(
     #     version='?v=20160301&t=' + str(time.time()),
@@ -201,21 +210,6 @@ class BaseHandler(RequestHandler):
         )
         return True
 
-    def get_password(self):
-        """Get the user name and password from cookie."""
-        params = self.get_secure_cookie('foo')
-        params = json.loads(params.decode()) if params else dict()
-        return Arguments(params)
-
-    def set_password(self, params, expire_time=2592000):
-        """Set the user name and password to cookie."""
-        self.set_secure_cookie(
-            'foo',
-            json.dumps(params),
-            expires=time.time() + expire_time,
-            domain=self.request.host
-        )
-
     def check_auth(self, check_level=1):
         """Check user status."""
         user_id = self.get_current_user()
@@ -243,34 +237,34 @@ class BaseHandler(RequestHandler):
             self.set_parameters(self.get_parameters().arguments)
             return (user_id, params)
 
-        sess_info = self.session.find_one({'user_id': user_id})
-        if sess_info:
-            ac_code = sess_info.get('ac_code')
-        else:
-            ac_code = None
-        if not params.ac_code or not ac_code or params.ac_code != ac_code:
-            self.set_current_user('')
-            self.set_parameters({})
-            self.dump_fail_data(3007)
-            return False
-        elif check_level is 3:
-            self.set_current_user(self.get_current_user())
-            self.set_parameters(self.get_parameters().arguments)
-            return (user_id, params)
+        # sess_info = self.session.find_one({'user_id': user_id})
+        # if sess_info:
+        #     ac_code = sess_info.get('ac_code')
+        # else:
+        #     ac_code = None
+        # if not params.ac_code or not ac_code or params.ac_code != ac_code:
+        #     self.set_current_user('')
+        #     self.set_parameters({})
+        #     self.dump_fail_data(3007)
+        #     return False
+        # elif check_level is 3:
+        #     self.set_current_user(self.get_current_user())
+        #     self.set_parameters(self.get_parameters().arguments)
+        #     return (user_id, params)
 
-        role = params.get('role')
-        if role != 'normal':
-            self.set_current_user('')
-            self.set_parameters({})
-            self.dump_fail_data(3008)
-            return False
-        elif check_level is 4:
-            self.set_current_user(self.get_current_user())
-            self.set_parameters(self.get_parameters().arguments)
-            return (user_id, params)
+        # role = params.get('role')
+        # if role != 'normal':
+        #     self.set_current_user('')
+        #     self.set_parameters({})
+        #     self.dump_fail_data(3008)
+        #     return False
+        # elif check_level is 4:
+        #     self.set_current_user(self.get_current_user())
+        #     self.set_parameters(self.get_parameters().arguments)
+        #     return (user_id, params)
 
-        self.set_current_user(self.get_current_user())
-        self.set_parameters(self.get_parameters().arguments)
+        # self.set_current_user(self.get_current_user())
+        # self.set_parameters(self.get_parameters().arguments)
         return (user_id, params)
 
     def dump_fail_data(self, status, back_data=None, polyfill=None, **_kwargs):

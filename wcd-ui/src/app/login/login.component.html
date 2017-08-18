@@ -1,0 +1,76 @@
+<div class="page-container" id="top">
+    <md-card>
+        <div class="title">
+            Welcome to Plankblog
+        </div>
+        <div class="content">
+            Cogito ergo sum -- René Descartes
+        </div>
+        <md-tab-group MdTabGroup [dynamicHeight]="dynamic_height">
+            <md-tab label="Sign In">
+                <div class="big-box" (keydown)="signIn($event)">
+                    <p>
+                        <md-input-container class="long-input">
+                            <md-placeholder>
+                                Enter Your Email
+                                <md-icon>mode_edit</md-icon>
+                            </md-placeholder>
+                            <input mdInput [(ngModel)]="sign_in_data.email" />
+                            <!-- <input mdInput [mdTooltip]="form_data.email_tooltip" [mdTooltipPosition]="position" [(ngModel)]="sign_in_data.email" /> -->
+                        </md-input-container>
+                        <br/>
+                        <md-input-container class="long-input ">
+                            <md-placeholder>
+                                Enter Your Password
+                                <md-icon>mode_edit</md-icon>
+                            </md-placeholder>
+                            <input mdInput [(ngModel)]="sign_in_data.password" type="password" />
+                            <!-- <input mdInput [mdTooltip]="form_data.pass_tooltip" [mdTooltipPosition]="position" [(ngModel)]="user_data.password" type="password" /> -->
+                        </md-input-container>
+                    </p>
+                    <button md-raised-button (click)="signIn()">Submit</button>
+                </div>
+                {{ user_time }}
+            </md-tab>
+            <md-tab label="Sign Up ">
+                <div class="big-box" (keyup)="signUp($event)">
+                    <p>
+                        <md-input-container class="long-input">
+                            <md-placeholder>
+                                Enter Your Name
+                                <md-icon>mode_edit</md-icon>
+                            </md-placeholder>
+                            <input mdInput [(ngModel)]="sign_up_data.nickname" [mdTooltip]="form_data.nick_tooltip" [mdTooltipPosition]="position" />
+                        </md-input-container>
+                        <br/>
+                        <md-input-container class="long-input">
+                            <md-placeholder>
+                                Enter Your Email
+                                <md-icon>mode_edit</md-icon>
+                            </md-placeholder>
+                            <input mdInput [(ngModel)]="sign_up_data.email" [mdTooltip]="form_data.email_tooltip" [mdTooltipPosition]="position" />
+                        </md-input-container>
+                        <br/>
+                        <md-input-container class="long-input">
+                            <md-placeholder>
+                                Enter Your Password
+                                <md-icon>mode_edit</md-icon>
+                            </md-placeholder>
+                            <input mdInput [(ngModel)]="sign_up_data.password" [mdTooltip]="form_data.pass_tooltip" [mdTooltipPosition]="position" type="password" />
+                        </md-input-container>
+                        <br/>
+                        <md-input-container class="long-input">
+                            <md-placeholder>
+                                Confirm Your Password
+                                <md-icon>mode_edit</md-icon>
+                            </md-placeholder>
+                            <input mdInput [(ngModel)]="sign_up_data.confirm_pass" [mdTooltip]="form_data.confirm_tooltip" [mdTooltipPosition]="position" type="password" />
+                        </md-input-container>
+                    </p>
+                    <button md-raised-button (click)="signUp()">Submit</button>
+                </div>
+                {{ user_time }}
+            </md-tab>
+        </md-tab-group>
+    </md-card>
+</div>
