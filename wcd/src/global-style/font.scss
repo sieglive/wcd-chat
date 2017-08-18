@@ -1,0 +1,57 @@
+/* font awesome */
+
+@import './font-awesome/css/font-awesome.min.css';
+
+/* nubito */
+
+@font-face {
+    font-family: 'nunito';
+    font-style: normal;
+    font-weight: 400;
+    src: local('nunito'), local('nunito-Regular'), url('/assets/fonts/nunito/Nunito-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'nunito-Bold';
+    font-style: normal;
+    font-weight: 400;
+    src: local('nunito-Bold'), url('/assets/fonts/nunito/Nunito-Bold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'nunito-Light';
+    font-style: normal;
+    font-weight: 400;
+    src: local('nunito-Light'), url('/assets/fonts/nunito/Nunito-Light.ttf') format('truetype');
+}
+
+
+/* chinese */
+
+@font-face {
+    font-family: 'scircle';
+    font-style: normal;
+    font-weight: 400;
+    src: local('scircle'), local('scircle-Regular'), url('/assets/fonts/scircle/scircle.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'scircle-Light';
+    font-style: normal;
+    font-weight: 400;
+    src: local('scircle-Light'), url('/assets/fonts/scircle/scircle-light.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'scircle-Bold';
+    font-style: normal;
+    font-weight: 400;
+    src: local('scircle-Bold'), url('/assets/fonts/scircle/scircle-bold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'scircle-Serif';
+    font-style: normal;
+    font-weight: 400;
+    src: local('scircle-Serif'), url('/assets/fonts/scircle/scircle-serif.otf') format('opentype');
+}
