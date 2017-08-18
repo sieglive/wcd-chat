@@ -1,7 +1,6 @@
 # coding:utf-8
 """Config Module."""
 import os
-
 import yaml
 from tornado.options import define
 
