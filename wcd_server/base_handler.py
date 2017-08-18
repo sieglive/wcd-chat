@@ -14,75 +14,8 @@ STATUS_DICT = dict([
     # Normal Error
     (3001, 'Username or password is invalid'),
     (3002, 'Account is inactivated.'),
-    (3003, 'Email not Register'),
-    (3004, 'Account is already exists, please login.'),
-    (3005, 'User\'s session key not exists, need to login.'),
-    (3006, 'User\'s session value not exists, need to login'),
-    (3007, 'Other people login this account, session is invalid.'),
-    (3008, 'User Permission Deny.'),
-    (3009, 'Not Regular Password'),
-    (3100, 'Parameter value type error.'),
-    (3101, 'Upload File Error'),
-    (3102, 'File Type Error'),
-    (3103, 'User Error'),
-    (3105, 'No Password Record Found'),
-    (3106, 'Parameter\'s value empty.'),
-    (3107, 'Free times out.'),
-    (3108, 'Argument "emails" is not an array.'),
-    (3109, 'email %s is not available.'),
-    (3199, 'Flow not completed'),
-    (3201, 'Access code error.'),
-    (3202, 'File is broken.'),
-    (3203, 'Convert File to Image Failed.'),
-    (3399, 'No new orders found.'),
+    (3003, 'Email not Register')])
 
-    # Client Error
-    (3400, 'Missing argument.'),
-    (3404, 'Page not found.'),
-    # Server Error
-    (3500, 'Server error'),
-    (3502, 'Bad gateway.'),
-    (3504, 'Connection time out.'),
-    (3599, 'Network Connect Timeout.'),
-    # Undefine Error
-    (3999, 'result is not 1.'), ])
-
-
-# class Tasks:
-#     """Manager class of tasks."""
-
-#     def __init__(self, params):
-#         if isinstance(params, dict):
-#             self.tasks = params
-#         else:
-#             raise TypeError(
-#                 f"Arguments data should be a 'dict' not {type(params)}.")
-
-#     def __getattr__(self, task_name):
-#         task = self.tasks.get(task_name)
-#         if task is None:
-#             raise KeyError(task_name)
-#         else:
-#             return task
-
-#     def __iter__(self):
-#         for i in self.tasks:
-#             yield i
-
-#     def __getitem__(self, name):
-#         task = self.tasks.get(name)
-#         if task is None:
-#             raise KeyError(name)
-#         else:
-#             return task
-
-#     def as_dict(self):
-#         """Return the task dictionary."""
-#         return self.tasks
-
-#     def keys(self):
-#         """Return the keys of the task dictionary."""
-#         return self.tasks.keys
 
 def underline_to_camel(underline_format):
     """Turn a underline format string to a camel format string."""
@@ -340,46 +273,6 @@ class BaseHandler(RequestHandler):
         self.set_parameters(self.get_parameters().arguments)
         return (user_id, params)
 
-    @gen.coroutine
-    def can_not_send(self, params):
-        """Check sent times of user."""
-        if not params:
-            self.dump_fail_data(3005)
-            return True
-        if params.get('permission'):
-            return False
-
-        elif params.get('user_id'):
-            sess_info = self.session.find_one(
-                {'user_id': params['user_id']})
-            sent_times = sess_info.get('free_count')
-            if sent_times is None:
-                back_info = yield self.fetch_back(
-                    interface='/back/doc/free',
-                    method='GET',
-                    body=dict(
-                        user_id=params['user_id']))
-                if back_info.http_code >= 400:
-                    self.dump_fail_data(3000 + back_info.http_code,
-                                        back_info.arguments)
-                    return True
-                elif not back_info.result:
-                    self.dump_fail_data(3999, back_info.arguments)
-                    return True
-
-                self.session.update_one(
-                    dict(user_id=params['user_id']),
-                    {'$set': {'free_count': back_info.data.times}})
-                sent_times = back_info.data.times
-            if sent_times >= config.sent_limit:
-                self.dump_fail_data(3107)
-                return True
-            else:
-                return False
-        else:
-            self.dump_fail_data(3005)
-            return True
-
     def dump_fail_data(self, status, back_data=None, polyfill=None, **_kwargs):
         """assemble and return error data."""
         if status in STATUS_DICT:
@@ -399,14 +292,6 @@ class BaseHandler(RequestHandler):
             **_kwargs)
         self.finish_with_json(res)
         return
-
-    # def check_json_args(self, data, key_list):
-    #     """Check if data match given key list."""
-    #     for key in key_list:
-    #         if key not in data:
-    #             return False
-    #         else:
-    #             return True
 
     def parse_form_arguments(self, key_list):
         """Parse JSON argument like `get_argument`."""
@@ -484,62 +369,3 @@ class BaseHandler(RequestHandler):
         """Turn data to JSON format before write."""
         self.write(json.dumps(data).encode())
 
-    # # Bind function to the config.
-    # @gen.coroutine
-    # def waiting_upload(self, func, args=None, kwargs=None):
-    #     result = yield self.waiting_result(
-    #         func, args=args, kwargs=kwargs, queue=options.queue_upload)
-    #     return result
-
-    # @gen.coroutine
-    # def waiting_payment(self, func, args=None, kwargs=None):
-    #     result = yield self.waiting_result(
-    #         func, args=args, kwargs=kwargs, queue=options.queue_payment)
-    #     return result
-
-    # @gen.coroutine
-    # def waiting_query(self, func, args=None, kwargs=None):
-    #     result = yield self.waiting_result(
-    #         func, args=args, kwargs=kwargs, queue=options.queue_query)
-    #     return result
-
-    # Waiting result of celery task without blocking.
-    @gen.coroutine
-    def waiting_result(self, func, args=None, kwargs=None):
-        """Method to waiting celery result."""
-        async_task = func.apply_async(args=args, kwargs=kwargs)
-
-        while True:
-            if async_task.status in ['PENDING', 'PROGRESS']:
-                yield gen.sleep(config.waiting_sleep_time)
-            elif async_task.status in ['SUCCESS', 'FAILURE']:
-                break
-            else:
-                print('\n\nUnknown status:\n', async_task.status, '\n\n\n')
-                break
-
-        if async_task.status != 'SUCCESS':
-            print(async_task.status, async_task.result)
-            print(async_task)
-            return dict(result=0, status=1, data=async_task.result)
-        else:
-            return async_task.result
-
-    # # For the important task, retry if the task failed.
-    # @gen.coroutine
-    # def retry(self, query, queue, args=None, kwargs=None):
-    #     action = 'fail'
-    #     result = None
-    #     for i in range(5):
-    #         action, result = yield self.waiting_result(
-    #             query(
-    #                 args=args,
-    #                 kwargs=kwargs,
-    #                 retry=False,
-    #                 queue=queue
-    #             ))
-    #         if action != 'fail':
-    #             break
-    #         yield gen.sleep(0.4)
-
-    #     return action, result

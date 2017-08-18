@@ -86,6 +86,7 @@ def main():
     #     config.server.port = options.port
 
     tornado_server.listen(options.port)
+    print('start listen...')
     # sys.stdout.write('\nconfig:\n')
     # json.dump(config.traverse(), sys.stdout, indent=4, sort_keys=True)
     # sys.stdout.write('\n\n\n')
