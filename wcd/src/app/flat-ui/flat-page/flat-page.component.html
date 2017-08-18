@@ -1,0 +1,64 @@
+<h2 color="black" container>colors</h2>
+<div container>
+    <h3 color="gray" container>dark colors:</h3>
+    <div class="color" container>
+        <div *ngFor="let color of colors" class="color-block" [background]="color">
+            <p>dark {{color}} </p>
+        </div>
+    </div>
+    <h3 color="gray" container>light colors:</h3>
+    <div class="color" container>
+        <div *ngFor="let color of colors" class="color-block" [background]="color+'-l'">
+            <p>light {{color}} </p>
+        </div>
+    </div>
+</div>
+<h2 color="black" container>Buttons</h2>
+<div container>
+    <h3 color="gray" container>normal button:</h3>
+    <div container>
+        <p>
+            <button size="normal">normal black</button>
+            <button size="normal" color="red">normal red</button>
+            <button size="normal" color="orange">normal orange</button>
+            <button size="normal" color="yellow">normal yellow</button>
+        </p>
+        <p style="margin-top:10px;">
+            <button size="normal" color="purple">normal purple</button>
+            <button size="normal" color="blue">normal blue</button>
+            <button size="normal" color="green">normal green</button>
+            <button size="normal" color="teal">normal teal</button>
+        </p>
+    </div>
+
+    <h3 color="gray" container>small button:</h3>
+    <div container>
+        <p>
+            <button size="small">small black</button>
+            <button size="small" color="red">small red</button>
+            <button size="small" color="orange">small orange</button>
+            <button size="small" color="yellow">small yellow</button>
+        </p>
+        <p style="margin-top:10px;">
+            <button size="small" color="purple">small purple</button>
+            <button size="small" color="blue">small blue</button>
+            <button size="small" color="green">small green</button>
+            <button size="small" color="teal">small teal</button>
+        </p>
+    </div>
+
+    <h3 color="gray" container>big button:</h3>
+    <div container>
+        <p><button size="big">big button</button></p>
+    </div>
+
+    <h3 color="gray" container>full button:</h3>
+    <div container>
+        <p><button size="full">full button</button></p>
+    </div>
+
+    <h3 color="gray" container>disable button:</h3>
+    <div container>
+        <p><button size="normal" disable="true">disable button</button></p>
+    </div>
+</div>
