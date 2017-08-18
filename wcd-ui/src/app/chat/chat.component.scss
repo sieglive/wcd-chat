@@ -1,0 +1,18 @@
+.mat-card {
+    height: 90%;
+    margin: 20px;
+}
+
+.chat-room {
+    .chat-show {
+        height: 80%;
+        background-image: radial-gradient(farthest-corner at 50% 50%, #f1f1f1 50%, #ddd 75%, #bbb 100%);
+    }
+    .chat-input {
+        margin-top: 30px;
+        width: 100%;
+        .mat-input-container {
+            width: 100%;
+        }
+    }
+}

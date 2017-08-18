@@ -1,0 +1,11 @@
+<md-card class="chat-room">
+    <div class="chat-show">
+        {{message}}
+    </div>
+    <div class="chat-input">
+        <md-input-container>
+            <textarea mdInput mdTextareaAutosize mdAutosizeMinRows="5" mdAutosizeMaxRows="5" [(ngModel)]="message"></textarea>
+        </md-input-container>
+    </div>
+
+</md-card>

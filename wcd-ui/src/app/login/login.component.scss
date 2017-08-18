@@ -1,0 +1,28 @@
+@import '~@angular/material/theming';
+$config: mat-typography-config();
+@include mat-core();
+$mycolor: map-get($mat-teal, 100);
+.mat-card {
+    height: 90%;
+    margin: 20px;
+}
+
+.long-input {
+    width: 30%;
+    min-width: 340px;
+    .input-pre {
+        font-size: 1.2em;
+        font-weight: bold;
+        font-family: Raleway, Arial, Helvetica, sans-serif;
+        width: 140px;
+    }
+}
+
+.big-box {
+    margin: 20px;
+}
+
+// button.mat-raised-button {
+//     color: map-get($mat-teal, 50);
+//     background: map-get($mat-teal, 300);
+// }

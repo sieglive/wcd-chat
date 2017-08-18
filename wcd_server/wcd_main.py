@@ -7,7 +7,7 @@ from tornado import gen, httpserver, ioloop, web
 from tornado.options import options
 
 from base_handler import BaseHandler
-
+from views import HANDLER_LIST
 
 class IndexHandler(BaseHandler):
     """Test index request handler."""
@@ -66,8 +66,8 @@ def main():
         (r'/test(?P<path>.*)?', TestHandler),
     ]
 
-    # handlers += [(f'/middle{handler[0]}', handler[1])
-    #              for handler in HANDLER_LIST]
+    handlers += [(f'/middle{handler[0]}', handler[1])
+                 for handler in HANDLER_LIST]
     # handlers += PAY_URLS
 
     tornado_app = web.Application(
