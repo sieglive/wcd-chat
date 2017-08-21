@@ -9,11 +9,14 @@ import { MdSnackBar } from '@angular/material';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
+import { AddressGuard, AuthGuard } from './service/guard.service';
 
 const wcd_routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
-    { path: 'login', loadChildren: 'app/login/login.module#LoginModule' },
-    { path: 'chat', loadChildren: 'app/chat/chat.module#ChatModule' },
+    { path: 'login', loadChildren: 'app/login/login.module#LoginModule', canLoad: [AddressGuard] },
+    { path: 'chat', loadChildren: 'app/chat/chat.module#ChatModule', canLoad: [AddressGuard] },
+    { path: 'error', loadChildren: 'app/error/error.module#ErrorModule' },
+    { path: 'chat-list', loadChildren: 'app/chat-list/chat-list.module#ChatListModule', canLoad: [AddressGuard] },
 ];
 
 @NgModule({
@@ -28,7 +31,7 @@ const wcd_routes: Routes = [
         HttpClientModule,
         RouterModule.forRoot(wcd_routes)
     ],
-    providers: [MdSnackBar, HttpClient],
+    providers: [MdSnackBar, HttpClient, AddressGuard, AuthGuard],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

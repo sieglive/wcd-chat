@@ -1,3 +1,16 @@
 mongo:
     client: 'mongodb://mymongo:123456@10.10.20.197'
     db: 'wcd'
+
+server:
+    port: 6322
+
+access_mode: 'reg' # reg | list
+
+access_regex: ^10.11.1.([0-9]{1,3})$
+
+access_list: 
+    - 10.11.1.76
+    - 10.11.1.80
+    - 10.11.1.81
+    - 10.11.1.111
