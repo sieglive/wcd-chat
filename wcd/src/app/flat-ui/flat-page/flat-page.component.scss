@@ -1,0 +1,24 @@
+h2 {
+    font-size: 30px;
+}
+
+h3 {
+    font-size: 26px;
+}
+
+.color {
+    min-width: 1050px;
+    .color-block {
+        display: inline-block;
+        width: 120px;
+        height: 100px;
+        line-height: 100px;
+        text-align: center;
+    }
+}
+
+.buttons {
+    p {
+        line-height: 40px;
+    }
+}
