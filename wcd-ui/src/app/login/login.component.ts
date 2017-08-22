@@ -18,15 +18,9 @@ export class LoginComponent implements OnInit {
         password: /^[0-9A-Za-z`~!@#$%^&*()_+\-=\{\}\[\]:;"'<>,.\\|?/ ]{6,24}$/,
         nickname: /^[\w\-\u4e00-\u9fa5]{1,24}$/,
     };
-    public sign_up_data = {
-        email: '',
-        password: '',
-        confirm_pass: '',
-        nickname: ''
-    };
 
     public sign_in_data = {
-        email: '',
+        nickname: '',
         password: '',
     };
 
@@ -65,10 +59,51 @@ export class LoginComponent implements OnInit {
             return event;
         }
 
-        this.sign_in_data.email = this.sign_in_data.email.trim();
+        this.sign_in_data.nickname = this.sign_in_data.nickname.trim();
         let message = '';
         let not_regular = false;
-        if (!this.sign_in_data.email.match(this.pattern.email)) {
+        if (!this.sign_in_data.nickname.match(this.pattern.nickname)) {
+            message = 'Invalid Email.';
+            not_regular = true;
+        } else if (!this.sign_in_data.password.match(this.pattern.password)) {
+            message = 'Invalid Password.';
+            not_regular = true;
+        }
+        if (not_regular) {
+            this.raiseSnackBar(message, 'OK', () => {
+                console.log('The snack-bar action was triggered!');
+            });
+            return false;
+        }
+        const result = this._http.post(
+            '/middle/account',
+            {
+                nickname: this.sign_in_data.nickname,
+                password: this.sign_in_data.password
+            });
+        result.subscribe(
+            data => {
+                if (data['result'] === 1) {
+                    this._router.navigate(['/chat-list']);
+                } else {
+                    this.raiseSnackBar(data['msg'], 'OK', () => {
+                        console.log('Got it.');
+                    });
+                    console.log(data);
+                    return false;
+                }
+            });
+    }
+
+    skipSignIn(event) {
+        if (event && event.key !== 'Enter') {
+            return event;
+        }
+
+        this.sign_in_data.nickname = this.sign_in_data.nickname.trim();
+        let message = '';
+        let not_regular = false;
+        if (!this.sign_in_data.nickname.match(this.pattern.nickname)) {
             message = 'Invalid Email.';
             not_regular = true;
         } else if (!this.sign_in_data.password.match(this.pattern.password)) {
@@ -84,7 +119,7 @@ export class LoginComponent implements OnInit {
         const result = this._http.post(
             '/middle/account/signin',
             {
-                email: this.sign_in_data.email,
+                email: this.sign_in_data.nickname,
                 password: this.sign_in_data.password
             });
         result.subscribe(
@@ -99,53 +134,5 @@ export class LoginComponent implements OnInit {
                     return false;
                 }
             });
-    }
-
-    signUp(event) {
-        if (event && event.key !== 'Enter') {
-            return event;
-        }
-
-        this.sign_up_data.email = this.sign_up_data.email.trim();
-        let message = '';
-        let not_regular = false;
-        if (!this.sign_up_data.nickname.match(this.pattern.nickname)) {
-            message = 'Invalid Nickname.';
-            not_regular = true;
-        } else if (!this.sign_up_data.email.match(this.pattern.email)) {
-            message = 'Invalid Email.';
-            not_regular = true;
-        } else if (!this.sign_up_data.password.match(this.pattern.password)) {
-            message = 'Invalid Password.';
-            not_regular = true;
-        } else if (this.sign_up_data.password !== this.sign_up_data.confirm_pass) {
-            message = 'Password is inconsistent';
-            not_regular = true;
-        }
-        if (not_regular) {
-            const snack_ref = this.snack_bar.open(
-                message,
-                '',
-                {
-                    duration: 2000,
-                }
-            );
-
-            snack_ref.onAction().subscribe(() => {
-                console.log('The snack-bar action was triggered!');
-            });
-            return false;
-        }
-        const result = this._http.post(
-            '/middle/account/signup',
-            {
-                nickname: this.sign_up_data.nickname,
-                email: this.sign_up_data.email,
-                password: this.sign_up_data.password
-            });
-        result.subscribe(
-            data => { console.log('success', data); },
-            err => { console.log('error', err); }
-        );
     }
 }

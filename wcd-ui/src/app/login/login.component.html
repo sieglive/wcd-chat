@@ -10,7 +10,7 @@
             <p>
                 <md-input-container class="long-input">
                     <md-placeholder>
-                        Enter Your Email
+                        Enter Your Nick Name
                         <md-icon>mode_edit</md-icon>
                     </md-placeholder>
                     <input mdInput [(ngModel)]="sign_in_data.email" />
@@ -27,6 +27,7 @@
                 </md-input-container>
             </p>
             <button md-raised-button (click)="signIn()">Submit</button>
+            <button md-raised-button color="primary" style="padding-left: 20px;" (click)="skipSignIn()">Skip</button>
         </div>
     </md-card>
 </div>
