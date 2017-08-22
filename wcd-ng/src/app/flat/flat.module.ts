@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { FlatComponent } from './flat.component';
 import { ColorModule } from './color/color.module';
+import { LayoutModule } from './layout/layout.module';
 
 const routes: Routes = [
   { path: '', component: FlatComponent }
@@ -11,7 +12,8 @@ const routes: Routes = [
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
-    ColorModule
+    ColorModule,
+    LayoutModule
   ],
   exports: [],
   declarations: [FlatComponent]
