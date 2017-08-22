@@ -24,6 +24,7 @@ STATUS_DICT = dict([
     (3011, 'Account is not exists, please sign up.'),
     (3012, 'Address is not allowed.'),
     (3013, 'Account is not exists, please sign up.'),
+    (3014, 'Nick Name already set.'),
     ])
 
 
@@ -270,7 +271,7 @@ class BaseHandler(RequestHandler):
         # self.set_parameters(self.get_parameters().arguments)
         return (user_id, params)
 
-    def dump_fail_data(self, status, back_data=None, polyfill=None, **_kwargs):
+    def dump_fail_data(self, status, back_data=None, data=None, polyfill=None, **_kwargs):
         """assemble and return error data."""
         if status in STATUS_DICT:
             msg = STATUS_DICT[status]
@@ -285,6 +286,7 @@ class BaseHandler(RequestHandler):
             result=0,
             status=status,
             msg=msg,
+            data=data,
             back_data=back_data,
             **_kwargs)
         self.finish_with_json(res)
