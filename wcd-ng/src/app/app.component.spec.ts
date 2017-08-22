@@ -21,16 +21,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   }));
 
-  it(`should have as title 'wcd'`, async(() => {
+  it(`should has no elements in component's class annoucement`, async () => {
     const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app.title).toEqual('wcd');
-  }));
-
-  it('should render title in a h1 tag', async(() => {
+    const componentContent = fixture.componentInstance;
+    expect(Object.keys(componentContent).length).toEqual(0);
+  });
+  it(`should have the outlet tag and this tag has no content`, async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain('Welcome to wcd!');
+    const outletTag = fixture.debugElement.nativeElement.querySelector('router-outlet');
+    expect(outletTag).toBeTruthy();
+    expect(outletTag.innerHTML).toEqual('');
   }));
 });

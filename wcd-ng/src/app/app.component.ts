@@ -1,10 +1,8 @@
 import { Component } from '@angular/core';
-
+import { Router } from '@angular/router';
 @Component({
-  selector: 'wcd-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  selector: 'fu-root',
+  template: '<router-outlet></router-outlet>'
 })
 export class AppComponent {
-  title = 'wcd';
 }
