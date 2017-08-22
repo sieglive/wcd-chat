@@ -32,6 +32,21 @@ class AddressGuard(BaseHandler):
         self.finish_with_json(res)
 
 
+class NickGuard(BaseHandler):
+    """Handler account stuff."""
+
+    @asynchronous
+    @coroutine
+    def get(self, *_args, **_kwargs):
+        user_info = self.wcd_user.find_one({'ip': self.request.remote_ip})
+        if user_info:
+            return self.dump_fail_data(
+                3014, data=dict(nickname=user_info['nickname']))
+
+        res = dict(result=1, status=0, msg='Successfully.', data=None)
+        self.finish_with_json(res)
+
+
 class Account(BaseHandler):
     """Handler account stuff."""
 
@@ -76,7 +91,7 @@ class Account(BaseHandler):
         user_info = self.wcd_user.find_one({'nickname': args.nickname})
         if not user_info:
             self.wcd_user.insert_one({
-                'user_id': str(uuid()),
+                'ip': self.request.remote_ip,
                 'nickname': args.nickname,
                 'password': md5(args.password).hexdigest()
             })
@@ -88,6 +103,7 @@ class Account(BaseHandler):
 
 
 ACCOUNT_URLS = [
-    (r'/address', AddressGuard),
+    (r'/address_guard', AddressGuard),
+    (r'/nick_guard', NickGuard),
     (r'/account', Account),
 ]
