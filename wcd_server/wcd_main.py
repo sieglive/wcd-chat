@@ -2,12 +2,16 @@
 # coding:utf-8
 """Main module of eSignDB."""
 import os
+import sys
+import json
 
 from tornado import gen, httpserver, ioloop, web
 from tornado.options import options
 
 from base_handler import BaseHandler
+from config import CFG as config
 from views import HANDLER_LIST
+
 
 class IndexHandler(BaseHandler):
     """Test index request handler."""
@@ -85,12 +89,12 @@ def main():
     # else:
     #     config.server.port = options.port
 
-    tornado_server.listen(options.port)
+    tornado_server.listen(config.server.port)
     print('start listen...')
-    # sys.stdout.write('\nconfig:\n')
-    # json.dump(config.traverse(), sys.stdout, indent=4, sort_keys=True)
-    # sys.stdout.write('\n\n\n')
-    # sys.stdout.flush()
+    sys.stdout.write('\nconfig:\n')
+    json.dump(config.traverse(), sys.stdout, indent=4, sort_keys=True)
+    sys.stdout.write('\n\n\n')
+    sys.stdout.flush()
 
     ioloop.IOLoop.instance().start()
 

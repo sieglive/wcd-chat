@@ -21,7 +21,10 @@ STATUS_DICT = dict([
     (3007, 'Other people login this account, session is invalid.'),
     (3008, 'User Permission Deny.'),
     (3009, 'Not Regular Password'),
-    (3011, 'Account is not exists, please sign up.'),])
+    (3011, 'Account is not exists, please sign up.'),
+    (3012, 'Address is not allowed.'),
+    (3013, 'Account is not exists, please sign up.'),
+    ])
 
 
 def underline_to_camel(underline_format):
