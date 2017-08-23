@@ -1,3 +1,55 @@
-<p>
-  chat-list works!
-</p>
+<div class="page-container" id="top">
+    <md-card>
+        <md-grid-list cols="3" rowHeight="2:1">
+            <md-grid-tile colspan="2">
+                <div class="title-container">
+                    <div class="title">
+                        WCD Chat Room
+                    </div>
+                    <div class="content">
+                        Cogito ergo sum -- René Descartes
+                    </div>
+                </div>
+            </md-grid-tile>
+            <md-grid-tile>
+                <!-- <div class="login-right"> -->
+                <div class="login-right" (keydown)="createChat($event)">
+                    <md-input-container class="long-input">
+                        <md-placeholder>
+                            Enter Name of Chat Group
+                            <md-icon>mode_edit</md-icon>
+                        </md-placeholder>
+                        <input mdInput [(ngModel)]="chat_name" />
+                    </md-input-container>
+                    <button md-raised-button (click)="createChat()">Create Chat Room</button>
+                </div>
+            </md-grid-tile>
+        </md-grid-list>
+
+        <md-table #table [dataSource]="dataSource">
+
+            <ng-container cdkColumnDef="chat_name">
+                <md-header-cell *cdkHeaderCellDef> CHAT </md-header-cell>
+                <md-cell *cdkCellDef="let row"> {{row.chat_name}} </md-cell>
+            </ng-container>
+
+            <ng-container cdkColumnDef="chat_creator">
+                <md-header-cell *cdkHeaderCellDef> IP </md-header-cell>
+                <md-cell *cdkCellDef="let row"> {{row.chat_creator}} </md-cell>
+            </ng-container>
+
+            <ng-container cdkColumnDef="chat_create_time">
+                <md-header-cell *cdkHeaderCellDef> CREATE </md-header-cell>
+                <md-cell *cdkCellDef="let row"> {{row.chat_create_time}} </md-cell>
+            </ng-container>
+
+            <!-- <ng-container cdkColumnDef="color">
+                <md-header-cell *cdkHeaderCellDef>Color</md-header-cell>
+                <md-cell *cdkCellDef="let row" [style.color]="row.color"> <a href="http://www.baidu.com">{{row.color}} </a></md-cell>
+            </ng-container> -->
+
+            <md-header-row *cdkHeaderRowDef="displayedColumns"></md-header-row>
+            <md-row *cdkRowDef="let row; columns: displayedColumns;"></md-row>
+        </md-table>
+    </md-card>
+</div>

@@ -30,8 +30,6 @@ export class AddressGuard implements CanActivate, CanLoad {
         const result = this._http.get('/middle/address_guard');
         const res: Subject<boolean> = new Subject<boolean>();
 
-
-
         const a = result.subscribe(
             data => {
                 console.log(data);
@@ -42,7 +40,7 @@ export class AddressGuard implements CanActivate, CanLoad {
                         queryParams: {
                             'message': 'Sorry, Your Ip Address is not Allowed.',
                             'sub_message': 'Contact Administrator to fix that.'
-                        }
+                        },
                     };
                     this._router.navigate(['/error'], navigationExtras);
                     res.next(false);
@@ -63,7 +61,36 @@ export class AddressGuard implements CanActivate, CanLoad {
     }
 
     canLoad(route: Route): Observable<boolean> {
+        const result = this._http.get('/middle/address_guard');
         const res: Subject<boolean> = new Subject<boolean>();
+
+        const a = result.subscribe(
+            data => {
+                console.log(data);
+                if (data['result'] === 1) {
+                    res.next(true);
+                } else {
+                    const navigationExtras: NavigationExtras = {
+                        queryParams: {
+                            'message': 'Sorry, Your Ip Address is not Allowed.',
+                            'sub_message': 'Contact Administrator to fix that.'
+                        },
+                    };
+                    this._router.navigate(['/error'], navigationExtras);
+                    res.next(false);
+                }
+            },
+            error => {
+                const navigationExtras: NavigationExtras = {
+                    queryParams: {
+                        'message': 'Sorry, We can not contact chat server now.',
+                        'sub_message': 'Contact Administrator to fix that.'
+                    }
+                };
+                this._router.navigate(['/error'], navigationExtras);
+                res.next(false);
+            });
+
         return res;
     }
 }
@@ -77,8 +104,6 @@ export class NickGuard implements CanActivate, CanLoad {
         const result = this._http.get('/middle/nick_guard');
         const res: Subject<boolean> = new Subject<boolean>();
 
-
-
         const a = result.subscribe(
             data => {
                 console.log(data);
@@ -90,7 +115,7 @@ export class NickGuard implements CanActivate, CanLoad {
                             'nickname': data['data']['nickname']
                         }
                     };
-                    this._router.navigate(['/chat-list'], navigationExtras);
+                    this._router.navigate(['/login'], navigationExtras);
                     res.next(false);
                 }
             },
@@ -119,15 +144,32 @@ export class AuthGuard {
 
     constructor(private _router: Router, private _http: HttpClient) { }
 
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+        const result = this._http.get('/middle/check_auth');
+        const res: Subject<boolean> = new Subject<boolean>();
 
-        const navigationExtras: NavigationExtras = {
-            queryParams: { 'session_id': 123456789 },
-            fragment: 'anchor'
-        };
+        const a = result.subscribe(
+            data => {
+                console.log(data);
+                if (data['result'] === 1) {
+                    this._router.navigate(['/chat-list']);
+                    res.next(true);
+                } else {
+                    res.next(true);
+                }
+            },
+            error => {
+                const navigationExtras: NavigationExtras = {
+                    queryParams: {
+                        'message': 'Sorry, We can not contact chat server now.',
+                        'sub_message': 'Contact Administrator to fix that.'
+                    }
+                };
+                this._router.navigate(['/error'], navigationExtras);
+                res.next(false);
+            });
 
-        this._router.navigate(['/login'], navigationExtras);
-        return false;
+        return res;
     }
 
 }

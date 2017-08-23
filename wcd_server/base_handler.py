@@ -97,6 +97,7 @@ class BaseHandler(RequestHandler):
     session = m_client.session
     wcd_user = m_client.wcd_user
     message_list = m_client.message_list
+    chat_list = m_client.chat_list
     # Set the public head here.
     # pub_head = dict(
     #     version='?v=20160301&t=' + str(time.time()),
@@ -230,7 +231,7 @@ class BaseHandler(RequestHandler):
             self.set_parameters(self.get_parameters().arguments)
             return (user_id, params)
 
-        if not params.user_id or params.user_id != user_id:
+        if not params.user_ip:
             self.set_current_user('')
             self.set_parameters({})
             self.dump_fail_data(3006)
@@ -241,20 +242,20 @@ class BaseHandler(RequestHandler):
             self.set_parameters(self.get_parameters().arguments)
             return (user_id, params)
 
-        # sess_info = self.session.find_one({'user_id': user_id})
-        # if sess_info:
-        #     ac_code = sess_info.get('ac_code')
-        # else:
-        #     ac_code = None
-        # if not params.ac_code or not ac_code or params.ac_code != ac_code:
-        #     self.set_current_user('')
-        #     self.set_parameters({})
-        #     self.dump_fail_data(3007)
-        #     return False
-        # elif check_level is 3:
-        #     self.set_current_user(self.get_current_user())
-        #     self.set_parameters(self.get_parameters().arguments)
-        #     return (user_id, params)
+        sess_info = self.wcd_user.find_one({'user_ip': self.request.remote_ip})
+        if sess_info:
+            ac_code = sess_info.get('ac_code')
+        else:
+            ac_code = None
+        if not params.ac_code or not ac_code or params.ac_code != ac_code:
+            self.set_current_user('')
+            self.set_parameters({})
+            self.dump_fail_data(3007)
+            return False
+        elif check_level is 3:
+            self.set_current_user(self.get_current_user())
+            self.set_parameters(self.get_parameters().arguments)
+            return (user_id, params)
 
         # role = params.get('role')
         # if role != 'normal':

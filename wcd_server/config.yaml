@@ -4,6 +4,7 @@ mongo:
 
 server:
     port: 6322
+    expire_time: 3600
 
 access_mode: 'list' # reg | list
 
