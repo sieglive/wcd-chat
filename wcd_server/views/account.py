@@ -38,12 +38,30 @@ class NickGuard(BaseHandler):
     @asynchronous
     @coroutine
     def get(self, *_args, **_kwargs):
-        user_info = self.wcd_user.find_one({'ip': self.request.remote_ip})
+        user_info = self.wcd_user.find_one({'user_ip': self.request.remote_ip})
         if user_info:
             return self.dump_fail_data(
                 3014, data=dict(nickname=user_info['nickname']))
 
         res = dict(result=1, status=0, msg='Successfully.', data=None)
+        self.finish_with_json(res)
+
+
+class AuthGuard(BaseHandler):
+    """Handler account stuff."""
+
+    @asynchronous
+    @coroutine
+    def get(self, *_args, **_kwargs):
+        res = self.check_auth(3)
+        if not res:
+            return
+        else:
+            _user_id, _params = res
+
+        print(_params.arguments)
+        res = dict(
+            result=1, status=0, msg='successfully.', data=_params.arguments)
         self.finish_with_json(res)
 
 
@@ -53,7 +71,7 @@ class Account(BaseHandler):
     @asynchronous
     @coroutine
     def get(self, *_args, **_kwargs):
-        res = self.check_auth(2)
+        res = self.check_auth(3)
         if not res:
             return
         else:
@@ -69,41 +87,48 @@ class Account(BaseHandler):
         args = self.parse_json_arguments(['nickname', 'password'])
         user_info = self.wcd_user.find_one({'nickname': args.nickname})
         if not user_info:
-            return self.dump_fail_data(3011)
-        if md5(args.password).hexdigest() != user_info['password']:
+            user_info = {
+                'user_ip': self.request.remote_ip,
+                'nickname': args.nickname,
+                'password': md5(args.password.encode()).hexdigest(),
+                'ac_code': uuid().hex
+            }
+            self.wcd_user.insert_one(user_info)
+        elif md5(args.password.encode()).hexdigest() != user_info['password']:
             return self.dump_fail_data(3001)
 
-        self.set_current_user(user_info['user_id'])
-        self.set_parameters(
-            dict(user_id=user_info['user_id'], nickname=user_info['nickname']))
-        res = dict(
-            result=1,
-            status=0,
-            msg='successfully.',
-            data=dict(user_id=args.user_id, nickname=args.nickname))
+        user_params = dict(
+            user_ip=user_info['user_ip'],
+            nickname=user_info['nickname'],
+            ac_code=user_info['ac_code'])
+        self.set_current_user(user_info['user_ip'] + user_info['ac_code'])
+        self.set_parameters(user_params)
+
+        res = dict(result=1, status=0, msg='successfully.', data=user_params)
         self.finish_with_json(res)
 
-    @asynchronous
-    @coroutine
-    def put(self, *_args, **_kwargs):
-        args = self.parse_json_arguments(['nickname', 'password'])
+    # @asynchronous
+    # @coroutine
+    # def put(self, *_args, **_kwargs):
+    #     args = self.parse_json_arguments(['nickname', 'password'])
 
-        user_info = self.wcd_user.find_one({'nickname': args.nickname})
-        if not user_info:
-            self.wcd_user.insert_one({
-                'ip': self.request.remote_ip,
-                'nickname': args.nickname,
-                'password': md5(args.password).hexdigest()
-            })
-        else:
-            return self.dump_fail_data(3004)
+    #     user_info = self.wcd_user.find_one({'nickname': args.nickname})
+    #     if not user_info:
+    #         self.wcd_user.insert_one({
+    #             'ip': self.request.remote_ip,
+    #             'nickname': args.nickname,
+    #             'password': md5(args.password).hexdigest()
+    #         })
+    #     else:
+    #         return self.dump_fail_data(3004)
 
-        res = dict(result=1, status=0, msg='successfully.', data=None)
-        self.finish_with_json(res)
+    #     res = dict(result=1, status=0, msg='successfully.', data=None)
+    #     self.finish_with_json(res)
 
 
 ACCOUNT_URLS = [
     (r'/address_guard', AddressGuard),
     (r'/nick_guard', NickGuard),
+    (r'/check_auth', AuthGuard),
     (r'/account', Account),
 ]

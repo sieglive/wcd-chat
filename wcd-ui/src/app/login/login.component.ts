@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { MdSnackBar } from '@angular/material';
-import { Router } from '@angular/router';
+import { Router, NavigationExtras } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 
 @Component({
     selector: 'app-login',
@@ -13,15 +16,17 @@ export class LoginComponent implements OnInit {
     public dynamic_height = true;
     public result: any;
     public user_time: number;
+    public nick_not_exists = true;
     public pattern = {
         email: /^([\w-]+)@([\w-]+)(\.([\w-]+))+$/,
         password: /^[0-9A-Za-z`~!@#$%^&*()_+\-=\{\}\[\]:;"'<>,.\\|?/ ]{6,24}$/,
         nickname: /^[\w\-\u4e00-\u9fa5]{1,24}$/,
     };
 
-    public sign_in_data = {
+    public user_data = {
         nickname: '',
         password: '',
+        cf_password: '',
     };
 
     public form_data = {
@@ -41,6 +46,28 @@ export class LoginComponent implements OnInit {
     ) { }
 
     ngOnInit() {
+        const result = this._http.get('/middle/nick_guard');
+        const a = result.subscribe(
+            data => {
+                console.log(data);
+                if (data['result'] === 1) {
+                    this.nick_not_exists = true;
+                    this.user_data.nickname = '';
+                } else {
+                    this.nick_not_exists = !data['data']['nickname'];
+                    this.user_data.nickname = data['data']['nickname'];
+                }
+            },
+            error => {
+                const navigationExtras: NavigationExtras = {
+                    queryParams: {
+                        'message': 'Sorry, We can not contact chat server now.',
+                        'sub_message': 'Contact Administrator to fix that.'
+                    }
+                };
+                this._router.navigate(['/error'], navigationExtras);
+            });
+
     }
 
     raiseSnackBar(message: string, action_name: string, action) {
@@ -59,73 +86,40 @@ export class LoginComponent implements OnInit {
             return event;
         }
 
-        this.sign_in_data.nickname = this.sign_in_data.nickname.trim();
+        this.user_data.nickname = this.user_data.nickname.trim();
         let message = '';
         let not_regular = false;
-        if (!this.sign_in_data.nickname.match(this.pattern.nickname)) {
-            message = 'Invalid Email.';
+        if (this.nick_not_exists && !this.user_data.nickname.match(this.pattern.nickname)) {
+            message = 'Invalid Nick Name.';
             not_regular = true;
-        } else if (!this.sign_in_data.password.match(this.pattern.password)) {
+        } else if (!this.nick_not_exists && !this.user_data.nickname.match(this.pattern.nickname)) {
+            message = 'Pull off a nick name is not good.';
+            not_regular = true;
+        } else if (!this.user_data.password.match(this.pattern.password)) {
             message = 'Invalid Password.';
             not_regular = true;
+        } else if (this.nick_not_exists && this.user_data.password !== this.user_data.cf_password) {
+            message = 'Password is inconsistent';
+            not_regular = true;
         }
+
         if (not_regular) {
             this.raiseSnackBar(message, 'OK', () => {
                 console.log('The snack-bar action was triggered!');
             });
             return false;
         }
+
         const result = this._http.post(
             '/middle/account',
             {
-                nickname: this.sign_in_data.nickname,
-                password: this.sign_in_data.password
+                nickname: this.user_data.nickname,
+                password: this.user_data.password
             });
         result.subscribe(
             data => {
                 if (data['result'] === 1) {
                     this._router.navigate(['/chat-list']);
-                } else {
-                    this.raiseSnackBar(data['msg'], 'OK', () => {
-                        console.log('Got it.');
-                    });
-                    console.log(data);
-                    return false;
-                }
-            });
-    }
-
-    skipSignIn(event) {
-        if (event && event.key !== 'Enter') {
-            return event;
-        }
-
-        this.sign_in_data.nickname = this.sign_in_data.nickname.trim();
-        let message = '';
-        let not_regular = false;
-        if (!this.sign_in_data.nickname.match(this.pattern.nickname)) {
-            message = 'Invalid Email.';
-            not_regular = true;
-        } else if (!this.sign_in_data.password.match(this.pattern.password)) {
-            message = 'Invalid Password.';
-            not_regular = true;
-        }
-        if (not_regular) {
-            this.raiseSnackBar(message, 'OK', () => {
-                console.log('The snack-bar action was triggered!');
-            });
-            return false;
-        }
-        const result = this._http.post(
-            '/middle/account/signin',
-            {
-                email: this.sign_in_data.nickname,
-                password: this.sign_in_data.password
-            });
-        result.subscribe(
-            data => {
-                if (data['result'] === 1) {
-                    this._router.navigate(['/home']);
                 } else {
                     this.raiseSnackBar(data['msg'], 'OK', () => {
                         console.log('Got it.');

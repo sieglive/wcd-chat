@@ -1,33 +1,69 @@
 <div class="page-container" id="top">
+
     <md-card>
-        <div class="title">
-            WCD Chat Room
-        </div>
-        <div class="content">
-            Cogito ergo sum -- René Descartes
-        </div>
-        <div class="big-box" (keydown)="signIn($event)">
-            <p>
-                <md-input-container class="long-input">
-                    <md-placeholder>
-                        Enter Your Nick Name
-                        <md-icon>mode_edit</md-icon>
-                    </md-placeholder>
-                    <input mdInput [(ngModel)]="sign_in_data.email" />
-                    <!-- <input mdInput [mdTooltip]="form_data.email_tooltip" [mdTooltipPosition]="position" [(ngModel)]="sign_in_data.email" /> -->
-                </md-input-container>
-                <br/>
-                <md-input-container class="long-input ">
-                    <md-placeholder>
-                        Enter Your Password
-                        <md-icon>mode_edit</md-icon>
-                    </md-placeholder>
-                    <input mdInput [(ngModel)]="sign_in_data.password" type="password" />
-                    <!-- <input mdInput [mdTooltip]="form_data.pass_tooltip" [mdTooltipPosition]="position" [(ngModel)]="user_data.password" type="password" /> -->
-                </md-input-container>
-            </p>
-            <button md-raised-button (click)="signIn()">Submit</button>
-            <button md-raised-button color="primary" style="padding-left: 20px;" (click)="skipSignIn()">Skip</button>
-        </div>
+        <md-grid-list cols="3" rowHeight="2:1">
+            <md-grid-tile>
+                <div class="title-container">
+                    <div class="title">
+                        WCD Chat Room
+                    </div>
+                    <div class="content">
+                        Cogito ergo sum -- René Descartes
+                    </div>
+                </div>
+            </md-grid-tile>
+            <md-grid-tile colspan="2">
+                <div class="login-right" (keydown)="signIn($event)">
+                    <p *ngIf="nick_not_exists; else elseBlock" class="input-container">
+                        <span class="nickname">Hi, fresh</span>
+                        <br/>
+                        <md-input-container class="long-input">
+                            <md-placeholder>
+                                Enter Your Nick Name
+                                <md-icon>mode_edit</md-icon>
+                            </md-placeholder>
+                            <input mdInput [(ngModel)]="user_data.nickname" />
+                        </md-input-container>
+                        <br/>
+                        <md-input-container class="long-password">
+                            <md-placeholder>
+                                Enter Your Password
+                                <md-icon>mode_edit</md-icon>
+                            </md-placeholder>
+                            <input mdInput [(ngModel)]="user_data.password" type="password" />
+                        </md-input-container>
+                        <md-input-container class="long-password">
+                            <md-placeholder>
+                                Confirm Your Password
+                                <md-icon>mode_edit</md-icon>
+                            </md-placeholder>
+                            <input mdInput [(ngModel)]="user_data.cf_password" type="password" />
+                        </md-input-container>
+                    </p>
+                    <ng-template #elseBlock>
+                        <p class="input-container">
+                            <span class="nickname">Hi, {{ user_data.nickname }}</span>
+                            <br/>
+                            <md-input-container class="long-input">
+                                <md-placeholder>
+                                    Enter Your Password
+                                    <md-icon>mode_edit</md-icon>
+                                </md-placeholder>
+                                <input mdInput [(ngModel)]="user_data.password" type="password" />
+                            </md-input-container>
+                        </p>
+                    </ng-template>
+                    <div class="button-container">
+                        <button md-raised-button (click)="signIn()">Sign In</button>
+                    </div>
+
+                </div>
+            </md-grid-tile>
+
+        </md-grid-list>
+
+
+
+
     </md-card>
 </div>
