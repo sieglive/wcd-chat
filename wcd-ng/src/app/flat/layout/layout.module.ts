@@ -4,7 +4,7 @@
 */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ContentDirective, ContainerDirective } from './layout.component';
+import { ContentDirective, ContainerDirective, CenterDirective, MiddleDirective } from './layout.component';
 
 @NgModule({
   imports: [
@@ -12,11 +12,15 @@ import { ContentDirective, ContainerDirective } from './layout.component';
   ],
   exports: [
     ContentDirective,
-    ContainerDirective
+    ContainerDirective,
+    CenterDirective,
+    MiddleDirective
   ],
   declarations: [
     ContentDirective,
-    ContainerDirective
+    ContainerDirective,
+    CenterDirective,
+    MiddleDirective
   ]
 })
 export class LayoutModule { }

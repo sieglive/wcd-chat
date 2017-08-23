@@ -1,5 +1,5 @@
 import {
-  Component, Directive, OnInit, AfterContentInit,
+  Component, Directive, AfterContentInit,
   HostBinding, Input, ContentChild, ContentChildren,
   QueryList, ElementRef
 } from '@angular/core';
@@ -8,11 +8,11 @@ import * as O_O from 'underscore';
 @Directive({
   selector: '[fuContent]'
 })
-export class ContentDirective implements OnInit {
+export class ContentDirective {
   @HostBinding('style.letterSpacing') letterSpacing = '0.1em';
   @HostBinding('style.fontSize') fontSize = '100%';
   @HostBinding('style.padding') padding = '1em 2em';
-  @HostBinding('style.boxsizing') boxsizing = 'border-box';
+  @HostBinding('style.boxSizing') boxSizing = 'border-box';
   @HostBinding('style.width') width = '100%';
   @HostBinding('style.height') height = '100%';
   @HostBinding('style.display') display = 'block';
@@ -21,7 +21,6 @@ export class ContentDirective implements OnInit {
     /* if ths input value is in the range of 12 */
     if (O_O.contains(O_O.range(12), parseInt(value, 10))) {
       this.padding = '0';
-      this.boxsizing = 'content-box';
       this.width = (100 / 12) * parseInt(value, 10) + '%';
       this.display = 'inline-block';
     } else if (value === 'page') {
@@ -31,9 +30,6 @@ export class ContentDirective implements OnInit {
     }
   }
   constructor(private _el: ElementRef) { }
-  ngOnInit() {
-
-  }
 }
 
 @Directive({
@@ -55,4 +51,31 @@ export class ContainerDirective implements AfterContentInit {
   }
 }
 
+@Directive({
+  selector: '[fuCenter]'
+})
+export class CenterDirective {
+  @HostBinding('style.textAlign') textAlign = 'inherit';
+  @Input() set fuCenter(value: string) {
+    if (value === '') {
+      this.textAlign = 'center';
+    }
+  }
+}
+
+@Directive({
+  selector: '[fuMiddle]'
+})
+export class MiddleDirective {
+  @HostBinding('style.lineHeight') lineHeight = 'inherit';
+  @Input() set fuCenter(value: string) {
+    if (value === '') {
+      setTimeout(() => {
+        const height = this._el.nativeElement.offsetHeight;
+        this.lineHeight = height + 'px';
+      }, 0);
+    }
+  }
+  constructor(private _el: ElementRef) { }
+}
 
