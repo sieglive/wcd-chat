@@ -3,8 +3,8 @@ import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
   {
-    path: '',
-    children: []
+    path: 'flat',
+    loadChildren: './flat/flat.module#FlatModule'
   }
 ];
 
