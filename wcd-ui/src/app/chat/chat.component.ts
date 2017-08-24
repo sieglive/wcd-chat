@@ -10,6 +10,8 @@ import { MdDialog, MdDialogRef, MD_DIALOG_DATA, MdSnackBar } from '@angular/mate
 })
 export class ChatComponent implements OnInit {
     public message = '';
+    public message_list = [];
+    public start_time = 0;
     public chat_id: string;
     public chat_info: object = {};
     public member_list = [];
@@ -30,6 +32,7 @@ export class ChatComponent implements OnInit {
                 this.chat_id = value.get('chat_id');
                 this.getChatInfo(this.chat_id);
             });
+        this.getMessageList();
     }
 
     raiseSnackBar(message: string, action_name: string, action) {
@@ -41,6 +44,28 @@ export class ChatComponent implements OnInit {
             }
         );
         snack_ref.onAction().subscribe(action);
+    }
+
+    getMessageList() {
+        this._http.get(
+            '/middle/message?chat_id=' + this.chat_id + '&start=' + this.start_time
+        ).subscribe(
+            data => {
+                console.log(data);
+                if (data['data']) {
+                    this.message_list = data['data']['msg_list'];
+                    // this.start_time = data['data']['end_time'];
+                }
+            },
+            error => {
+                const navigationExtras: NavigationExtras = {
+                    queryParams: {
+                        'message': 'Sorry, We can not contact chat server now.',
+                        'sub_message': 'Contact Administrator to fix that.'
+                    }
+                };
+                this._router.navigate(['/error'], navigationExtras);
+            });
     }
 
     getChatInfo(chat_id) {
@@ -115,6 +140,37 @@ export class ChatComponent implements OnInit {
                                 });
                         }
                     });
+            },
+            error => {
+                const navigationExtras: NavigationExtras = {
+                    queryParams: {
+                        'message': 'Sorry, We can not contact chat server now.',
+                        'sub_message': 'Contact Administrator to fix that.'
+                    }
+                };
+                this._router.navigate(['/error'], navigationExtras);
+            });
+    }
+
+    sendMessage(event) {
+        if (event && event.key !== 'Enter') {
+            return event;
+        }
+        if (!this.message) {
+            return false;
+        }
+        const new_message = this.message;
+        this.message = '';
+        this._http.put(
+            '/middle/message',
+            {
+                message: new_message,
+                chat_id: this.chat_id
+            }
+        ).subscribe(
+            data => {
+                console.log(data);
+                this.getMessageList();
             },
             error => {
                 const navigationExtras: NavigationExtras = {
