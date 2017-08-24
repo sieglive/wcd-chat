@@ -25,6 +25,10 @@ STATUS_DICT = dict([
     (3012, 'Address is not allowed.'),
     (3013, 'Account is not exists, please sign up.'),
     (3014, 'Nick Name already set.'),
+    (3100, 'Permission Deny.'),
+    (3104, 'Chat Not Exists.'),
+    (3105, 'Can not enter this chat.'),
+    (3150, 'Chat Member Exists.'),
     ])
 
 
@@ -293,7 +297,7 @@ class BaseHandler(RequestHandler):
         self.finish_with_json(res)
         return
 
-    def parse_form_arguments(self, key_list):
+    def parse_form_arguments(self, key_list, option_key_list=None):
         """Parse JSON argument like `get_argument`."""
         if config.debug:
             sys.stdout.write('\n\n' + '>' * 80)
@@ -308,6 +312,13 @@ class BaseHandler(RequestHandler):
 
         for key in key_list:
             req[camel_to_underline(key)] = self.get_argument(key)
+
+        if option_key_list:
+            for key in option_key_list:
+                try:
+                    req[camel_to_underline(key)] = self.get_argument(key)
+                except MissingArgumentError:
+                    pass
 
         req['user_ip'] = self.request.remote_ip
 
