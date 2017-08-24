@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit {
     public pattern = {
         email: /^([\w-]+)@([\w-]+)(\.([\w-]+))+$/,
         password: /^[0-9A-Za-z`~!@#$%^&*()_+\-=\{\}\[\]:;"'<>,.\\|?/ ]{6,24}$/,
-        nickname: /^[\w\-\u4e00-\u9fa5]{1,24}$/,
+        nickname: /^[\w\- \u4e00-\u9fa5 ]{1,24}$/,
     };
 
     public user_data = {

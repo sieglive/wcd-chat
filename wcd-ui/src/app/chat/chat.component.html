@@ -1,11 +1,53 @@
-<md-card class="chat-room">
-    <div class="chat-show">
-        {{message}}
-    </div>
-    <div class="chat-input">
-        <md-input-container>
-            <textarea mdInput mdTextareaAutosize mdAutosizeMinRows="5" mdAutosizeMaxRows="5" [(ngModel)]="message"></textarea>
-        </md-input-container>
-    </div>
+<div class="page-container chat-room" id="top">
+    <md-card>
+        <md-grid-list cols="4" rowHeight="2:1">
+            <md-grid-tile colspan="1" rowspan="1">
+                <div class="title-container">
+                    <div class="title">
+                        Chat Room
+                    </div>
+                    <div class="content">
+                        {{ chat_info.chat_name }}
+                    </div>
+                </div>
+            </md-grid-tile>
+            <md-grid-tile colspan="3" rowspan="3">
+                <div class="chat-show">
+                    {{message}}
+                </div>
+            </md-grid-tile>
+            <md-grid-tile colspan="1" rowspan="3">
+                <md-list class="member-container">
+                    <md-list-item *ngFor="let member of member_list">
+                        <md-chip-list>
+                            <md-chip color="primary" selected="true">{{ member.nickname }}</md-chip>
+                            <md-chip color="accent" selected="true">{{ member.user_ip }}</md-chip>
+                            <md-chip color="accent" selected="true"><i class="fa fa-trash-o" aria-hidden="true" style="font-size: 18px"></i></md-chip>
+                        </md-chip-list>
+                    </md-list-item>
+                    <md-list-item>
+                        <md-input-container class="long-input">
+                            <md-placeholder>
+                                Enter Ip of user to add
+                                <md-icon>mode_edit</md-icon>
+                            </md-placeholder>
+                            <input mdInput [(ngModel)]="new_member" maxlength="15" />
+                        </md-input-container>
+                    </md-list-item>
+                    <md-list-item>
+                        <button color="primary" md-raised-button (click)="queryMember()">Add Member</button>
+                    </md-list-item>
+                </md-list>
+            </md-grid-tile>
+            <md-grid-tile colspan="3">
+                <div class="chat-input">
+                    <md-input-container>
+                        <textarea mdInput mdTextareaAutosize mdAutosizeMinRows="5" mdAutosizeMaxRows="5" [(ngModel)]="message"></textarea>
+                    </md-input-container>
+                </div>
+            </md-grid-tile>
+        </md-grid-list>
 
-</md-card>
+
+    </md-card>
+</div>

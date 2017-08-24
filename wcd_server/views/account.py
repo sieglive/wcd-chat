@@ -28,7 +28,12 @@ class AddressGuard(BaseHandler):
             if self.request.remote_ip not in config.access_list:
                 return self.dump_fail_data(3012)
 
-        res = dict(result=1, status=0, msg='Successfully.', data=None)
+        user_info = self.wcd_user.find_one({'user_ip': self.request.remote_ip})
+        if user_info:
+            user_info = dict(
+                user_ip=user_info['user_ip'], nickname=user_info['nickname'])
+
+        res = dict(result=1, status=0, msg='Successfully.', data=user_info)
         self.finish_with_json(res)
 
 
@@ -59,7 +64,6 @@ class AuthGuard(BaseHandler):
         else:
             _user_id, _params = res
 
-        print(_params.arguments)
         res = dict(
             result=1, status=0, msg='successfully.', data=_params.arguments)
         self.finish_with_json(res)
@@ -77,8 +81,17 @@ class Account(BaseHandler):
         else:
             _user_id, _params = res
 
-        res = dict(
-            result=1, status=0, msg='successfully.', data=_params.arguments)
+        args = self.parse_form_arguments(['member_ip'])
+
+        user_info = self.wcd_user.find_one(dict(user_ip=args.member_ip))
+
+        if not user_info:
+            return self.dump_fail_data(3013)
+
+        user_params = dict(
+            user_ip=user_info['user_ip'],
+            nickname=user_info['nickname'], )
+        res = dict(result=1, status=0, msg='successfully.', data=user_params)
         self.finish_with_json(res)
 
     @asynchronous

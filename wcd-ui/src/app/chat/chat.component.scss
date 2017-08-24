@@ -4,8 +4,28 @@
 }
 
 .chat-room {
+    .title-container {
+        width: 100%;
+        height: 100%;
+        text-align: left;
+    }
+    .member-container {
+        width: 100%;
+        height: 100%;
+        text-align: left;
+        overflow: auto;
+        button {
+            margin-top: 20px;
+            margin-left: 20px;
+        }
+        .long-input {
+            width: 100%;
+            height: 100%;
+        }
+    }
     .chat-show {
-        height: 80%;
+        width: 100%;
+        height: 100%;
         background-image: radial-gradient(farthest-corner at 50% 50%, #f1f1f1 50%, #ddd 75%, #bbb 100%);
     }
     .chat-input {

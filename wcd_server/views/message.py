@@ -17,18 +17,24 @@ class ChatRoom(BaseHandler):
     @asynchronous
     @coroutine
     def get(self, *_args, **_kwargs):
-        res = self.check_auth(2)
+        res = self.check_auth(3)
         if not res:
             return
         else:
             _user_id, _params = res
 
-        chat_list = self.chat_list.find({'chat_create_time': {'$gt': 1}})
+        args = self.parse_form_arguments([], ['chat_id'])
 
-        chat_list = [chat for chat in chat_list]
-        for chat in chat_list:
-            if '_id' in chat:
-                del chat['_id']
+        if not args.chat_id:
+            chat_list = self.chat_list.find({'chat_create_time': {'$gt': 1}})
+            chat_list = [chat for chat in chat_list]
+            for chat in chat_list:
+                if '_id' in chat:
+                    del chat['_id']
+        else:
+            chat_list = self.chat_list.find_one({'chat_id': args.chat_id})
+            if '_id' in chat_list:
+                del chat_list['_id']
 
         res = dict(result=1, status=0, msg='Successfully.', data=chat_list)
         self.finish_with_json(res)
@@ -36,7 +42,7 @@ class ChatRoom(BaseHandler):
     @asynchronous
     @coroutine
     def post(self, *_args, **_kwargs):
-        res = self.check_auth(2)
+        res = self.check_auth(3)
         if not res:
             return
         else:
@@ -45,7 +51,7 @@ class ChatRoom(BaseHandler):
     @asynchronous
     @coroutine
     def put(self, *_args, **_kwargs):
-        res = self.check_auth(2)
+        res = self.check_auth(3)
         if not res:
             return
         else:
@@ -56,7 +62,8 @@ class ChatRoom(BaseHandler):
         chat_info = dict(
             chat_id=str(uuid()),
             chat_name=args.chat_name,
-            chat_creator=_params.user_ip,
+            creator_ip=_params.user_ip,
+            creator_nick=_params.nickname,
             chat_secret=args.chat_secret,
             chat_create_time=int(time.time()),
             chat_member=[
@@ -75,11 +82,97 @@ class ChatRoom(BaseHandler):
     @asynchronous
     @coroutine
     def delete(self, *_args, **_kwargs):
-        res = self.check_auth(2)
+        res = self.check_auth(3)
         if not res:
             return
         else:
             _user_id, _params = res
+
+        args = self.parse_form_arguments(['chat_id'])
+
+        chat_info = self.chat_list.find_one(dict(chat_id=args.chat_id))
+        if not chat_info:
+            return self.dump_fail_data(3104)
+        if chat_info['creator_ip'] != _params.user_ip:
+            return self.dump_fail_data(3100)
+
+        self.chat_list.delete_one(dict(chat_id=args.chat_id))
+
+        res = dict(result=1, status=0, msg='Successfully.', data=None)
+        self.finish_with_json(res)
+
+
+class ChatMember(BaseHandler):
+    """Handler message stuff."""
+
+    @asynchronous
+    @coroutine
+    def get(self, *_args, **_kwargs):
+        res = self.check_auth(3)
+        if not res:
+            return
+        else:
+            _user_id, _params = res
+
+        args = self.parse_form_arguments(['chat_id'])
+
+        chat_list = self.chat_list.find_one({'chat_id': args.chat_id})
+
+        if not chat_list:
+            return self.dump_fail_data(3104)
+
+        member_list = [
+            member['user_ip'] for member in chat_list['chat_member']
+        ]
+        if _params.user_ip not in member_list:
+            return self.dump_fail_data(3105)
+
+        res = dict(result=1, status=0, msg='successfully.', data=None)
+        self.finish_with_json(res)
+
+    @asynchronous
+    @coroutine
+    def post(self, *_args, **_kwargs):
+        pass
+
+    @asynchronous
+    @coroutine
+    def put(self, *_args, **_kwargs):
+        res = self.check_auth(3)
+        if not res:
+            return
+        else:
+            _user_id, _params = res
+
+        args = self.parse_json_arguments(['member_ip', 'chat_id'])
+
+        user_info = self.wcd_user.find_one(dict(user_ip=args.member_ip))
+
+        if not user_info:
+            return self.dump_fail_data(3011)
+
+        chat_info = self.chat_list.find_one(dict(chat_id=args.chat_id))
+        if args.member_ip in chat_info['chat_member']:
+            return self.dump_fail_data(3150)
+
+        print(args.member_ip, user_info['nickname'])
+        chat_info = self.chat_list.update_one(
+            dict(chat_id=args.chat_id), {
+                '$addToSet': {
+                    'chat_member': {
+                        'user_ip': args.member_ip,
+                        'nickname': user_info['nickname']
+                    }
+                }
+            })
+
+        res = dict(result=1, status=0, msg='Successfully.', data=None)
+        self.finish_with_json(res)
+
+    @asynchronous
+    @coroutine
+    def delete(self, *_args, **_kwargs):
+        pass
 
 
 class Message(BaseHandler):
@@ -88,7 +181,7 @@ class Message(BaseHandler):
     @asynchronous
     @coroutine
     def get(self, *_args, **_kwargs):
-        res = self.check_auth(2)
+        res = self.check_auth(3)
         if not res:
             return
         else:
@@ -120,7 +213,7 @@ class Message(BaseHandler):
     @asynchronous
     @coroutine
     def put(self, *_args, **_kwargs):
-        res = self.check_auth(2)
+        res = self.check_auth(3)
         if not res:
             return
         else:
@@ -142,4 +235,5 @@ class Message(BaseHandler):
 MESSAGE_URLS = [
     (r'/message', Message),
     (r'/chat-list', ChatRoom),
+    (r'/chat-member', ChatMember),
 ]

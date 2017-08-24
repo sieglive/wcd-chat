@@ -5,6 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import { Router, NavigationExtras } from '@angular/router';
 import { MdSnackBar } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
+import { AccountService } from '../service/guard.service';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/map';
@@ -19,20 +20,29 @@ export class ChatListComponent implements OnInit {
     displayedColumns = [
         'chat_name',
         'chat_creator',
-        'chat_create_time'];
+        'chat_create_time',
+        'chat_action'];
     exampleDatabase = new ExampleDatabase();
     dataSource: ExampleDataSource | null;
     public chat_name = '';
+    public user_info: object = {};
 
     constructor(
         private _http: HttpClient,
         private _router: Router,
         public snack_bar: MdSnackBar,
+        private _account: AccountService,
     ) { }
 
     ngOnInit() {
         this.dataSource = new ExampleDataSource(this.exampleDatabase);
         const result = this._http.get('/middle/chat-list');
+
+        this._account.info.subscribe(info => {
+            this.user_info = info;
+        });
+
+        this.getChat(null);
 
         const a = result.subscribe(
             data => {
@@ -83,6 +93,8 @@ export class ChatListComponent implements OnInit {
             return event;
         }
         const result = this._http.put('/middle/chat-list', { chat_name: this.chat_name });
+
+        this.chat_name = '';
         const a = result.subscribe(
             data => {
                 console.log('add-chat-list', data);
@@ -98,6 +110,32 @@ export class ChatListComponent implements OnInit {
                 this._router.navigate(['/error'], navigationExtras);
             });
     }
+
+    enterChat(chat_id) {
+        this._router.navigate(['/chat/' + chat_id]);
+    }
+
+    deleteChat(chat_id) {
+        const result = this._http.delete('/middle/chat-list?chat_id=' + chat_id);
+        const a = result.subscribe(
+            data => {
+                console.log('delete-chat-list', data);
+                this.getChat(null);
+            },
+            error => {
+                const navigationExtras: NavigationExtras = {
+                    queryParams: {
+                        'message': 'Sorry, We can not contact chat server now.',
+                        'sub_message': 'Contact Administrator to fix that.'
+                    }
+                };
+                this._router.navigate(['/error'], navigationExtras);
+            });
+    }
+
+    ownThisChat(creator_ip) {
+        return creator_ip === this.user_info['user_ip'];
+    }
 }
 
 /** Constants used to fill up our data base. */
@@ -110,7 +148,8 @@ const NAMES = ['Maia', 'Asher', 'Olivia', 'Atticus', 'Amelia', 'Jack',
 export interface UserData {
     chat_id: string;
     chat_name: string;
-    chat_creator: string;
+    creator_ip: string;
+    creator_nick: string;
     chat_secret: string;
     chat_create_time: number;
     chat_member: any;
