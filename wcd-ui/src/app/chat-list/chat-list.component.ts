@@ -134,6 +134,9 @@ export class ChatListComponent implements OnInit {
     }
 
     ownThisChat(creator_ip) {
+        if (!creator_ip || !this.user_info) {
+            return false;
+        }
         return creator_ip === this.user_info['user_ip'];
     }
 }
