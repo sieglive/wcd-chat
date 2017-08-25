@@ -37,7 +37,7 @@
                             <md-chip *ngIf="chat_info['creator_ip'] === user_info['user_ip'] && user_info['user_ip'] !== member.user_ip" color="accent" selected="true"><a (click)="deleteMember(member.user_ip)"><i class="fa fa-trash-o" aria-hidden="true" style="font-size: 18px"></i></a></md-chip>
                         </md-chip-list>
                     </md-list-item>
-                    <md-list-item (keydown)="queryMember($event)">
+                    <md-list-item (keydown)="queryMember($event)" *ngIf="chat_info['creator_ip'] === user_info['user_ip']">
                         <md-input-container class="long-input">
                             <md-placeholder>
                                 Enter Ip of user to add
@@ -46,7 +46,7 @@
                             <input mdInput [(ngModel)]="new_member" maxlength="15" />
                         </md-input-container>
                     </md-list-item>
-                    <md-list-item>
+                    <md-list-item *ngIf="chat_info['creator_ip'] === user_info['user_ip']">
                         <button color="primary" md-raised-button (click)="queryMember(null)">Add Member</button>
                     </md-list-item>
                 </md-list>
