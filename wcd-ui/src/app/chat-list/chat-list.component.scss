@@ -10,12 +10,29 @@
 
 .login-right {
     text-align: left;
-    position: relative;
     width: 100%;
     height: 100%;
-    padding: 20px;
-    .mat-input-container {
-        width: 90%;
+    // padding: 20px;
+    display: inline-block;
+    .long-input {
+        display: inline-block;
+        height: 100%;
+        width: 40%;
+         :first-child {
+            margin-top: 15px;
+            width: 100%;
+            display: inline-block;
+            vertical-align: middle;
+        }
+    }
+    .long-input-button {
+        display: inline-block;
+        height: 100%;
+         :first-child {
+            margin-top: 15px;
+            display: inline-block;
+            vertical-align: middle;
+        }
     }
 }
 

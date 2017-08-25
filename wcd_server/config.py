@@ -4,7 +4,7 @@ import os
 import yaml
 from tornado.options import define
 
-_ENV = 'prod'
+_ENV = 'test'
 define('port', default=0)
 
 

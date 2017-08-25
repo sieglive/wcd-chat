@@ -1,0 +1,20 @@
+<h2 md-dialog-title>User Info of {{data.user_ip}}</h2>
+<md-dialog-content>
+    <md-list>
+        <md-list-item>
+            <md-input-container class="long-input">
+                <md-placeholder>
+                    Enter Your Nick Name
+                    <md-icon>mode_edit</md-icon>
+                </md-placeholder>
+                <input mdInput [(ngModel)]="nickname" />
+            </md-input-container>
+        </md-list-item>
+        <md-list-item>
+        </md-list-item>
+    </md-list>
+</md-dialog-content>
+<md-dialog-actions>
+    <button md-button [md-dialog-close]="false">Cancel</button>
+    <button md-button [md-dialog-close]="nickname">Submit</button>
+</md-dialog-actions>

@@ -69,6 +69,41 @@ class AuthGuard(BaseHandler):
         self.finish_with_json(res)
 
 
+class AccountInfo(BaseHandler):
+    """Handler account stuff."""
+
+    @asynchronous
+    @coroutine
+    def post(self, *_args, **_kwargs):
+        res = self.check_auth(3)
+        if not res:
+            return
+        else:
+            _user_id, _params = res
+
+        args = self.parse_json_arguments(['nickname'])
+
+        user_info = self.wcd_user.update_one({
+            'user_ip': self.request.remote_ip
+        }, {'$set': {
+            'nickname': args.nickname
+        }})
+
+        user_info = self.wcd_user.find_one(
+            dict(user_ip=self.request.remote_ip))
+
+        user_params = dict(
+            user_ip=user_info['user_ip'],
+            nickname=user_info['nickname'],
+            ac_code=user_info['ac_code'])
+
+        self.set_current_user(user_info['user_ip'] + user_info['ac_code'])
+        self.set_parameters(user_params)
+
+        res = dict(result=1, status=0, msg='successfully.', data=user_params)
+        self.finish_with_json(res)
+
+
 class Account(BaseHandler):
     """Handler account stuff."""
 
@@ -98,7 +133,7 @@ class Account(BaseHandler):
     @coroutine
     def post(self, *_args, **_kwargs):
         args = self.parse_json_arguments(['nickname', 'password'])
-        user_info = self.wcd_user.find_one({'nickname': args.nickname})
+        user_info = self.wcd_user.find_one({'user_ip': self.request.remote_ip})
         if not user_info:
             user_info = {
                 'user_ip': self.request.remote_ip,
@@ -144,4 +179,5 @@ ACCOUNT_URLS = [
     (r'/nick_guard', NickGuard),
     (r'/check_auth', AuthGuard),
     (r'/account', Account),
+    (r'/account/info', AccountInfo),
 ]

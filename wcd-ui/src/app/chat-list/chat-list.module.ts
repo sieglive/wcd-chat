@@ -4,21 +4,24 @@ import { RouterModule, Routes } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MaterialModule, MdTableModule } from '@angular/material';
 import { CdkTableModule } from '@angular/cdk';
-import { ChatListComponent } from './chat-list.component';
+import { ChatListComponent, AppUserinfoComponent } from './chat-list.component';
 
 const chat_list_routes: Routes = [
-  { path: '', component: ChatListComponent },
+    { path: '', component: ChatListComponent },
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    MdTableModule,
-    MaterialModule,
-    CdkTableModule,
-    RouterModule.forChild(chat_list_routes)
-  ],
-  declarations: [ChatListComponent]
+    imports: [
+        CommonModule,
+        FormsModule,
+        MdTableModule,
+        MaterialModule,
+        CdkTableModule,
+        RouterModule.forChild(chat_list_routes)
+    ],
+    entryComponents: [
+        AppUserinfoComponent
+    ],
+    declarations: [ChatListComponent, AppUserinfoComponent]
 })
 export class ChatListModule { }

@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { DataSource } from '@angular/cdk';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 import { Router, NavigationExtras } from '@angular/router';
-import { MdSnackBar } from '@angular/material';
+import { MdDialog, MdDialogRef, MD_DIALOG_DATA, MdSnackBar } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { AccountService } from '../service/guard.service';
 
@@ -32,9 +32,10 @@ export class ChatListComponent implements OnInit {
 
     constructor(
         private _http: HttpClient,
-        private _router: Router,
-        public snack_bar: MdSnackBar,
         private _account: AccountService,
+        private _router: Router,
+        public dialog: MdDialog,
+        public snack_bar: MdSnackBar,
     ) { }
 
     ngOnInit() {
@@ -142,7 +143,99 @@ export class ChatListComponent implements OnInit {
         }
         return creator_ip === this.user_info['user_ip'];
     }
+
+    raiseSnackBar(message: string, action_name: string, action) {
+        const snack_ref = this.snack_bar.open(
+            message,
+            action_name,
+            {
+                duration: 2000,
+            }
+        );
+        snack_ref.onAction().subscribe(action);
+    }
+
+    editProfile(event) {
+        if (event && event.key !== 'Enter') {
+            return event;
+        }
+        // if (!this.new_member) {
+        //     const message = 'Ip Adress should not be empty.';
+        //     this.raiseSnackBar(message, 'OK', () => {
+        //         console.log('The snack-bar action was triggered!');
+        //     });
+        //     return false;
+        // }
+        // const new_ip_adress = this.new_member;
+        // this.new_member = '';
+        this._http.get(
+            '/middle/account?member_ip=' + this.user_info['user_ip']
+        ).subscribe(
+            data => {
+                if (!data['data']) {
+                    const message = 'This user not exists.';
+                    this.raiseSnackBar(message, 'OK', () => {
+                        console.log('The snack-bar action was triggered!');
+                    });
+                    return false;
+                }
+                console.log(data);
+                const dialogRef = this.dialog.open(AppUserinfoComponent, {
+                    height: '300px',
+                    width: '600px',
+                    data: {
+                        user_ip: data['data']['user_ip'],
+                        nickname: data['data']['nickname'],
+                    }
+                });
+
+                dialogRef.afterClosed().subscribe(
+                    res => {
+                        if (res) {
+                            this._http.post(
+                                '/middle/account/info', { nickname: res }
+                            ).subscribe(
+                                add_member_data => {
+                                    console.log(add_member_data);
+                                },
+                                error => {
+                                    const navigationExtras: NavigationExtras = {
+                                        queryParams: {
+                                            'message': 'Sorry, We can not contact chat server now.',
+                                            'sub_message': 'Contact Administrator to fix that.'
+                                        }
+                                    };
+                                    this._router.navigate(['/error'], navigationExtras);
+                                });
+                        }
+                    });
+            },
+            error => {
+                const navigationExtras: NavigationExtras = {
+                    queryParams: {
+                        'message': 'Sorry, We can not contact chat server now.',
+                        'sub_message': 'Contact Administrator to fix that.'
+                    }
+                };
+                this._router.navigate(['/error'], navigationExtras);
+            });
+    }
 }
+
+
+@Component({
+    selector: 'app-userinfo',
+    templateUrl: './userinfo.component.html',
+})
+export class AppUserinfoComponent {
+
+    constructor(
+        public dialogRef: MdDialogRef<AppUserinfoComponent>,
+        @Inject(MD_DIALOG_DATA) public data: any,
+    ) { }
+}
+
+
 
 /** Constants used to fill up our data base. */
 const COLORS = ['maroon', 'red', 'orange', 'yellow', 'olive', 'green', 'purple',

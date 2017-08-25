@@ -31,10 +31,9 @@
             <md-grid-tile colspan="1" rowspan="3">
                 <md-list class="member-container">
                     <md-list-item *ngFor="let member of member_list">
-                        <md-chip-list>
+                        <md-chip-list mdTooltip="{{ member.nickname }}: {{member.user_ip}}" mdTooltipPosition="after">
                             <md-chip color="primary" selected="true">{{ member.nickname }}</md-chip>
-                            <md-chip color="accent" selected="true">{{ member.user_ip }}</md-chip>
-                            <md-chip *ngIf="chat_info['creator_ip'] === user_info['user_ip'] && user_info['user_ip'] !== member.user_ip" color="accent" selected="true"><a (click)="deleteMember(member.user_ip)"><i class="fa fa-trash-o" aria-hidden="true" style="font-size: 18px"></i></a></md-chip>
+                            <md-chip color="warn" *ngIf="chat_info['creator_ip'] === user_info['user_ip'] && user_info['user_ip'] !== member.user_ip" selected="true"><a (click)="deleteMember(member.user_ip)"><i class="fa fa-trash-o" aria-hidden="true" style="font-size: 18px"></i></a></md-chip>
                         </md-chip-list>
                     </md-list-item>
                     <md-list-item (keydown)="queryMember($event)" *ngIf="chat_info['creator_ip'] === user_info['user_ip']">

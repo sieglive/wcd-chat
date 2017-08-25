@@ -6,16 +6,17 @@ import { MaterialModule } from '@angular/material';
 import { ErrorComponent } from './error.component';
 
 const error_routes: Routes = [
-  { path: '', component: ErrorComponent },
+    { path: '', component: ErrorComponent },
+    { path: '**', component: ErrorComponent },
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    MaterialModule,
-    RouterModule.forChild(error_routes)
-  ],
-  declarations: [ErrorComponent]
+    imports: [
+        CommonModule,
+        FormsModule,
+        MaterialModule,
+        RouterModule.forChild(error_routes)
+    ],
+    declarations: [ErrorComponent]
 })
 export class ErrorModule { }
