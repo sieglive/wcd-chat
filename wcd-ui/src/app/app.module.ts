@@ -18,8 +18,9 @@ const wcd_routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
     { path: 'login', loadChildren: 'app/login/login.module#LoginModule', canActivate: [AddressGuard, AuthGuard] },
     { path: 'chat/:chat_id', loadChildren: 'app/chat/chat.module#ChatModule', canActivate: [AddressGuard, ChatGuard] },
-    { path: 'error', loadChildren: 'app/error/error.module#ErrorModule' },
     { path: 'chat-list', loadChildren: 'app/chat-list/chat-list.module#ChatListModule', canActivate: [AddressGuard] },
+    { path: 'error', loadChildren: 'app/error/error.module#ErrorModule' },
+    { path: '**', redirectTo: '/error' }
 ];
 
 @NgModule({

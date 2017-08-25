@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
     styleUrls: ['./error.component.scss']
 })
 export class ErrorComponent implements OnInit {
-    public message = 'Something Wrong';
+    public message = 'Page Not Found';
     public sub_message = 'Sorry for that.';
     constructor(private _router: Router) { }
 

@@ -1,6 +1,6 @@
 <div class="page-container" id="top">
     <md-card>
-        <md-grid-list cols="3" rowHeight="3:1">
+        <md-grid-list cols="3" rowHeight="6:1">
             <md-grid-tile colspan="2">
                 <div class="title-container">
                     <div class="title">
@@ -11,17 +11,26 @@
                     </div>
                 </div>
             </md-grid-tile>
-            <md-grid-tile>
-                <!-- <div class="login-right"> -->
+            <md-grid-tile colspan="1" rowspan="2">
+                <button md-icon-button style="font-size: 10em" [mdMenuTriggerFor]="menu"><i class="fa fa-frown-o fa-4" aria-hidden="true"></i></button>
+                <md-menu #menu="mdMenu">
+                    <button md-menu-item (click)="editProfile(null)"><md-icon>mode_edit</md-icon><span>Edit Profile</span></button>
+                </md-menu>
+            </md-grid-tile>
+            <md-grid-tile colspan="2">
                 <div class="login-right" (keydown)="createChat($event)">
-                    <md-input-container class="long-input">
-                        <md-placeholder>
-                            Enter Name of Chat Group
-                            <md-icon>mode_edit</md-icon>
-                        </md-placeholder>
-                        <input mdInput [(ngModel)]="chat_name" maxlength="15" />
-                    </md-input-container>
-                    <button md-raised-button (click)="createChat(null)">Create Chat Room</button>
+                    <div class="long-input">
+                        <md-input-container>
+                            <md-placeholder>
+                                Enter Name of Chat Group
+                                <!-- <md-icon>mode_edit</md-icon> -->
+                            </md-placeholder>
+                            <input mdInput [(ngModel)]="chat_name" maxlength="15" />
+                        </md-input-container>
+                    </div>
+
+                    <div class="long-input-button"><button md-raised-button (click)="createChat(null)">Create Chat Room</button></div>
+
                 </div>
             </md-grid-tile>
         </md-grid-list>
@@ -47,7 +56,7 @@
                 <md-header-cell *cdkHeaderCellDef> ACTION </md-header-cell>
                 <md-cell *cdkCellDef="let row">
                     <button md-raised-button (click)="enterChat(row.chat_id)" class="action-button" color="primary">Enter</button>
-                    <button *ngIf="ownThisChat(row.creator_ip)" md-raised-button (click)="deleteChat(row.chat_id)" class="action-button" color="accent">Delete</button>
+                    <button *ngIf="ownThisChat(row.creator_ip)" md-raised-button (click)="deleteChat(row.chat_id)" class="action-button" color="warn">Delete</button>
                 </md-cell>
             </ng-container>
 
