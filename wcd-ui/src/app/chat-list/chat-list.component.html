@@ -21,7 +21,7 @@
                         </md-placeholder>
                         <input mdInput [(ngModel)]="chat_name" maxlength="15" />
                     </md-input-container>
-                    <button md-raised-button (click)="createChat()">Create Chat Room</button>
+                    <button md-raised-button (click)="createChat(null)">Create Chat Room</button>
                 </div>
             </md-grid-tile>
         </md-grid-list>
@@ -40,7 +40,7 @@
 
             <ng-container cdkColumnDef="chat_create_time">
                 <md-header-cell *cdkHeaderCellDef> CREATE TIME </md-header-cell>
-                <md-cell *cdkCellDef="let row"> {{row.chat_create_time}} </md-cell>
+                <md-cell *cdkCellDef="let row"> {{row.chat_create_time * 1000 | date: 'y-MM-dd HH:mm:ss'}} </md-cell>
             </ng-container>
 
             <ng-container cdkColumnDef="chat_action">
@@ -50,11 +50,6 @@
                     <button *ngIf="ownThisChat(row.creator_ip)" md-raised-button (click)="deleteChat(row.chat_id)" class="action-button" color="accent">Delete</button>
                 </md-cell>
             </ng-container>
-
-            <!-- <ng-container cdkColumnDef="color">
-                <md-header-cell *cdkHeaderCellDef>Color</md-header-cell>
-                <md-cell *cdkCellDef="let row" [style.color]="row.color"> <a href="http://www.baidu.com">{{row.color}} </a></md-cell>
-            </ng-container> -->
 
             <md-header-row *cdkHeaderRowDef="displayedColumns"></md-header-row>
             <md-row *cdkRowDef="let row; columns: displayedColumns;"></md-row>

@@ -6,6 +6,9 @@ import { Router, NavigationExtras } from '@angular/router';
 import { MdSnackBar } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { AccountService } from '../service/guard.service';
+
+import { DatePipe } from '@angular/common';
+
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/map';

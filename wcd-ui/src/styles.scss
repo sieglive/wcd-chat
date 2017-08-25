@@ -12,9 +12,14 @@ html {
         height: 100%;
         padding: 0;
         margin: 0;
-        // position: fixed;
+        position: fixed;
         background: #b2dfdb;
     }
+}
+
+.chat-show .mat-list .mat-list-item .mat-list-item-content {
+    height: auto!important;
+    margin-bottom: 10px;
 }
 
 .title {

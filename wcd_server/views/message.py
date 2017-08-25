@@ -151,10 +151,9 @@ class ChatMember(BaseHandler):
             return self.dump_fail_data(3011)
 
         chat_info = self.chat_list.find_one(dict(chat_id=args.chat_id))
-        if args.member_ip in chat_info['chat_member']:
-            return self.dump_fail_data(3150)
+        # if args.member_ip in chat_info['chat_member']:
+        #     return self.dump_fail_data(3150)
 
-        print(args.member_ip, user_info['nickname'])
         chat_info = self.chat_list.update_one(
             dict(chat_id=args.chat_id), {
                 '$addToSet': {
@@ -171,7 +170,35 @@ class ChatMember(BaseHandler):
     @asynchronous
     @coroutine
     def delete(self, *_args, **_kwargs):
-        pass
+        res = self.check_auth(3)
+        if not res:
+            return
+        else:
+            _user_id, _params = res
+
+        args = self.parse_form_arguments(['member_ip', 'chat_id'])
+
+        user_info = self.wcd_user.find_one(dict(user_ip=args.member_ip))
+
+        if not user_info:
+            return self.dump_fail_data(3011)
+
+        chat_info = self.chat_list.find_one(dict(chat_id=args.chat_id))
+        # if args.member_ip not in chat_info['chat_member']:
+        #     return self.dump_fail_data(3151)
+
+        print('aaaaaa', args.member_ip, user_info['nickname'])
+
+        chat_info = self.chat_list.update_one(
+            dict(chat_id=args.chat_id),
+            {'$pull': {
+                'chat_member': {
+                    'user_ip': args.member_ip
+                }
+            }})
+
+        res = dict(result=1, status=0, msg='Successfully.', data=None)
+        self.finish_with_json(res)
 
 
 class Message(BaseHandler):
@@ -204,7 +231,10 @@ class Message(BaseHandler):
         msg_list = self.message_list.find(query_dict)
 
         msg_list = [msg for msg in msg_list]
+        last_msg_time = 0
         for msg in msg_list:
+            if msg['msg_time'] > last_msg_time:
+                last_msg_time = msg['msg_time']
             del msg['_id']
             del msg['date']
 
@@ -212,7 +242,7 @@ class Message(BaseHandler):
             result=1,
             status=0,
             msg='message successfully.',
-            data=dict(msg_list=msg_list, end_time=int(args.end)))
+            data=dict(msg_list=msg_list, end_time=int(last_msg_time)))
         self.finish_with_json(res)
 
     @asynchronous
@@ -237,7 +267,8 @@ class Message(BaseHandler):
             'chat_id': args.chat_id,
             'msg_time': int(time.time()),
             'date': datetime.utcnow(),
-            'nickname': _params.nickname
+            'nickname': _params.nickname,
+            'user_ip': _params.user_ip
         })
         res = dict(result=1, status=0, msg='successfully.', data=None)
         self.finish_with_json(res)
