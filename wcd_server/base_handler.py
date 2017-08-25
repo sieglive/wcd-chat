@@ -29,6 +29,7 @@ STATUS_DICT = dict([
     (3104, 'Chat Not Exists.'),
     (3105, 'Can not enter this chat.'),
     (3150, 'Chat Member Exists.'),
+    (3151, 'Chat Member Not Exists.'),
     ])
 
 

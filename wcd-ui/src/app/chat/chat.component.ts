@@ -1,35 +1,61 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { MdDialog, MdDialogRef, MD_DIALOG_DATA, MdSnackBar } from '@angular/material';
+
+import { AccountService } from '../service/guard.service';
+
+import { DatePipe } from '@angular/common';
 
 @Component({
     selector: 'app-chat',
     templateUrl: './chat.component.html',
     styleUrls: ['./chat.component.scss']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, AfterViewInit {
     public message = '';
+    public message_list = [];
+    public user_info: object = {};
+    public start_time = 0;
+    public end_time = 0;
     public chat_id: string;
     public chat_info: object = {};
     public member_list = [];
+    public member_dict = {};
     public new_member = '';
+    public show_message: any;
+
+    @ViewChild('target') target;
 
     constructor(
         private _http: HttpClient,
         private _route: ActivatedRoute,
         private _router: Router,
+        private _el: ElementRef,
         public dialog: MdDialog,
         public snack_bar: MdSnackBar,
+        private _account: AccountService,
     ) { }
 
     ngOnInit() {
         console.log('init');
+        this._account.info.subscribe(info => {
+            this.user_info = info;
+        });
+
         this._route.paramMap.subscribe(
             value => {
                 this.chat_id = value.get('chat_id');
                 this.getChatInfo(this.chat_id);
             });
+        this.getMessageList();
+        setInterval(() => { this.getMessageList(); }, 3000);
+    }
+    ngAfterViewInit() {
+        // setTimeout(
+        //     () => {
+        //         this.target.nativeElement.scrollTop = this.target.nativeElement.scrollHeight;
+        //     }, 0);
     }
 
     raiseSnackBar(message: string, action_name: string, action) {
@@ -43,13 +69,24 @@ export class ChatComponent implements OnInit {
         snack_ref.onAction().subscribe(action);
     }
 
-    getChatInfo(chat_id) {
-        const result = this._http.get(
-            '/middle/chat-list?chat_id=' + chat_id
+    getMessageList() {
+        this._http.get(
+            '/middle/message?chat_id=' + this.chat_id + '&start=' + this.start_time
         ).subscribe(
             data => {
-                this.chat_info = data['data'];
-                this.member_list = this.chat_info['chat_member'];
+                const last_end_time = this.end_time;
+                if (data['data']) {
+                    this.message_list = data['data']['msg_list'];
+                    // this.start_time = data['data']['end_time'];
+                    this.end_time = data['data']['end_time'];
+                }
+                if (last_end_time !== this.end_time) {
+                    setTimeout(
+                        () => {
+                            this.target.nativeElement.scrollTop = this.target.nativeElement.scrollHeight;
+                            console.log(this.target);
+                        }, 0);
+                }
             },
             error => {
                 const navigationExtras: NavigationExtras = {
@@ -62,7 +99,32 @@ export class ChatComponent implements OnInit {
             });
     }
 
-    queryMember() {
+    getChatInfo(chat_id) {
+        const result = this._http.get(
+            '/middle/chat-list?chat_id=' + chat_id
+        ).subscribe(
+            data => {
+                this.chat_info = data['data'];
+                this.member_list = this.chat_info['chat_member'];
+                for (let i = 0; i < this.member_list.length; i++) {
+                    this.member_dict[this.member_list[i]['user_ip']] = this.member_list[i];
+                }
+            },
+            error => {
+                const navigationExtras: NavigationExtras = {
+                    queryParams: {
+                        'message': 'Sorry, We can not contact chat server now.',
+                        'sub_message': 'Contact Administrator to fix that.'
+                    }
+                };
+                this._router.navigate(['/error'], navigationExtras);
+            });
+    }
+
+    queryMember(event) {
+        if (event && event.key !== 'Enter') {
+            return event;
+        }
         if (!this.new_member) {
             const message = 'Ip Adress should not be empty.';
             this.raiseSnackBar(message, 'OK', () => {
@@ -96,12 +158,10 @@ export class ChatComponent implements OnInit {
                 dialogRef.afterClosed().subscribe(
                     res => {
                         if (res) {
-                            console.log(new_ip_adress);
                             this._http.put(
                                 '/middle/chat-member', { member_ip: new_ip_adress, chat_id: this.chat_id }
                             ).subscribe(
                                 add_member_data => {
-                                    console.log(add_member_data);
                                     this.getChatInfo(this.chat_id);
                                 },
                                 error => {
@@ -115,6 +175,54 @@ export class ChatComponent implements OnInit {
                                 });
                         }
                     });
+            },
+            error => {
+                const navigationExtras: NavigationExtras = {
+                    queryParams: {
+                        'message': 'Sorry, We can not contact chat server now.',
+                        'sub_message': 'Contact Administrator to fix that.'
+                    }
+                };
+                this._router.navigate(['/error'], navigationExtras);
+            });
+    }
+
+    deleteMember(drop_ip_adress) {
+        this._http.delete(
+            '/middle/chat-member?member_ip=' + drop_ip_adress + '&chat_id=' + this.chat_id
+        ).subscribe(
+            drop_member_data => {
+                this.getChatInfo(this.chat_id);
+            },
+            error => {
+                const navigationExtras: NavigationExtras = {
+                    queryParams: {
+                        'message': 'Sorry, We can not contact chat server now.',
+                        'sub_message': 'Contact Administrator to fix that.'
+                    }
+                };
+                this._router.navigate(['/error'], navigationExtras);
+            });
+    }
+
+    sendMessage(event) {
+        if (event && event.key !== 'Enter') {
+            return event;
+        }
+        if (!this.message) {
+            return false;
+        }
+        const new_message = this.message;
+        this.message = '';
+        this._http.put(
+            '/middle/message',
+            {
+                message: new_message,
+                chat_id: this.chat_id
+            }
+        ).subscribe(
+            data => {
+                this.getMessageList();
             },
             error => {
                 const navigationExtras: NavigationExtras = {

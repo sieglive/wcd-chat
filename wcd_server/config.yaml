@@ -1,9 +1,13 @@
 mongo:
     client: 'mongodb://mymongo:123456@10.10.20.197'
-    db: 'wcd'
+    db: 
+        test: 'wcd'
+        prod: 'wcd_prod'
 
 server:
-    port: 6322
+    port: 
+        test: 6322
+        prod: 6329
     expire_time: 3600
 
 access_mode: 'list' # reg | list
@@ -14,4 +18,6 @@ access_list:
     - 10.11.1.76
     - 10.11.1.80
     - 10.11.1.81
+    - 10.11.1.86
+    - 10.11.1.91
     - 10.11.1.111

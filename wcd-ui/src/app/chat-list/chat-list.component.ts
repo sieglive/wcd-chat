@@ -6,6 +6,9 @@ import { Router, NavigationExtras } from '@angular/router';
 import { MdSnackBar } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { AccountService } from '../service/guard.service';
+
+import { DatePipe } from '@angular/common';
+
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/map';
@@ -134,6 +137,9 @@ export class ChatListComponent implements OnInit {
     }
 
     ownThisChat(creator_ip) {
+        if (!creator_ip || !this.user_info) {
+            return false;
+        }
         return creator_ip === this.user_info['user_ip'];
     }
 }
