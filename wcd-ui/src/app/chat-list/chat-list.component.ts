@@ -40,17 +40,13 @@ export class ChatListComponent implements OnInit {
 
     ngOnInit() {
         this.dataSource = new ExampleDataSource(this.exampleDatabase);
-        const result = this._http.get('/middle/chat-list');
-
+        document.title = 'Chat List';
         this._account.info.subscribe(info => {
             this.user_info = info;
         });
-
         this.getChat(null);
-
-        const a = result.subscribe(
+        const result = this._http.get('/middle/chat-list').subscribe(
             data => {
-                console.log('chat-list', data);
                 this.exampleDatabase.dataChange.next(
                     data['data']
                 );
@@ -64,8 +60,6 @@ export class ChatListComponent implements OnInit {
                 };
                 this._router.navigate(['/error'], navigationExtras);
             });
-
-        // setTimeout(() => { this.getDataSource(); }, 0);
     }
 
     getChat(event) {
@@ -73,7 +67,6 @@ export class ChatListComponent implements OnInit {
 
         const a = result.subscribe(
             data => {
-                console.log('chat-list', data);
                 this.exampleDatabase.dataChange.next(
                     data['data']
                 );
@@ -101,7 +94,6 @@ export class ChatListComponent implements OnInit {
         this.chat_name = '';
         const a = result.subscribe(
             data => {
-                console.log('add-chat-list', data);
                 this.getChat(null);
             },
             error => {
@@ -123,7 +115,6 @@ export class ChatListComponent implements OnInit {
         const result = this._http.delete('/middle/chat-list?chat_id=' + chat_id);
         const a = result.subscribe(
             data => {
-                console.log('delete-chat-list', data);
                 this.getChat(null);
             },
             error => {
@@ -159,15 +150,6 @@ export class ChatListComponent implements OnInit {
         if (event && event.key !== 'Enter') {
             return event;
         }
-        // if (!this.new_member) {
-        //     const message = 'Ip Adress should not be empty.';
-        //     this.raiseSnackBar(message, 'OK', () => {
-        //         console.log('The snack-bar action was triggered!');
-        //     });
-        //     return false;
-        // }
-        // const new_ip_adress = this.new_member;
-        // this.new_member = '';
         this._http.get(
             '/middle/account?member_ip=' + this.user_info['user_ip']
         ).subscribe(
@@ -175,11 +157,9 @@ export class ChatListComponent implements OnInit {
                 if (!data['data']) {
                     const message = 'This user not exists.';
                     this.raiseSnackBar(message, 'OK', () => {
-                        console.log('The snack-bar action was triggered!');
                     });
                     return false;
                 }
-                console.log(data);
                 const dialogRef = this.dialog.open(UserinfoComponent, {
                     height: '300px',
                     width: '600px',
@@ -196,7 +176,6 @@ export class ChatListComponent implements OnInit {
                                 '/middle/account/info', { nickname: res }
                             ).subscribe(
                                 add_member_data => {
-                                    console.log(add_member_data);
                                 },
                                 error => {
                                     const navigationExtras: NavigationExtras = {
@@ -233,7 +212,6 @@ export class ChatListComponent implements OnInit {
                 if (!data['data']) {
                     const message = 'This user not exists.';
                     this.raiseSnackBar(message, 'OK', () => {
-                        console.log('The snack-bar action was triggered!');
                     });
                     return false;
                 }
@@ -249,24 +227,6 @@ export class ChatListComponent implements OnInit {
 
                 dialogRef.afterClosed().subscribe(
                     res => {
-                        console.log(res);
-                        // if (res) {
-                        //     this._http.post(
-                        //         '/middle/account/info', { nickname: res }
-                        //     ).subscribe(
-                        //         add_member_data => {
-                        //             console.log(add_member_data);
-                        //         },
-                        //         error => {
-                        //             const navigationExtras: NavigationExtras = {
-                        //                 queryParams: {
-                        //                     'message': 'Sorry, We can not contact chat server now.',
-                        //                     'sub_message': 'Contact Administrator to fix that.'
-                        //                 }
-                        //             };
-                        //             this._router.navigate(['/error'], navigationExtras);
-                        //         });
-                        // }
                     });
             },
             error => {

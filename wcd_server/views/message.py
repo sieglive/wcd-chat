@@ -177,10 +177,6 @@ class ChatMember(BaseHandler):
         if not user_info:
             return self.dump_fail_data(3011)
 
-        chat_info = self.chat_list.find_one(dict(chat_id=args.chat_id))
-        # if args.member_ip in chat_info['chat_member']:
-        #     return self.dump_fail_data(3150)
-
         chat_info = self.chat_list.update_one(
             dict(chat_id=args.chat_id),
             {'$addToSet': {
@@ -207,8 +203,6 @@ class ChatMember(BaseHandler):
             return self.dump_fail_data(3011)
 
         chat_info = self.chat_list.find_one(dict(chat_id=args.chat_id))
-        # if args.member_ip not in chat_info['chat_member']:
-        #     return self.dump_fail_data(3151)
 
         print('aaaaaa', args.member_ip, user_info['nickname'])
 
@@ -236,17 +230,15 @@ class Message(BaseHandler):
 
         args = self.parse_form_arguments(['chat_id', 'start'])
         if not args.end:
-            args.add('end', int(time.time()))
+            args.add('end', int(time.time() * 1000))
 
         query_dict = {
             'chat_id': args.chat_id,
-            # 'msg_time': 1503575078
             'msg_time': {
                 '$gt': int(args.start),
                 '$lte': int(args.end)
             }
         }
-        # pprint(query_dict, indent=4)
 
         msg_list = self.message_list.find(query_dict)
 
@@ -256,13 +248,11 @@ class Message(BaseHandler):
 
         last_msg_time = 0
         for msg in msg_list:
-            # print(msg['msg_time'])
             if msg['msg_time'] > last_msg_time:
                 last_msg_time = msg['msg_time']
             del msg['_id']
             del msg['date']
 
-        # pprint(msg_list, indent=4)
         res = dict(
             result=1,
             status=0,
@@ -290,7 +280,7 @@ class Message(BaseHandler):
             'msg_id': uuid().hex,
             'message': args.message,
             'chat_id': args.chat_id,
-            'msg_time': int(time.time()),
+            'msg_time': int(time.time() * 1000),
             'date': datetime.utcnow(),
             'nickname': _params.nickname,
             'user_ip': _params.user_ip

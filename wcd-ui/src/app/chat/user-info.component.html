@@ -1,0 +1,15 @@
+<h2 md-dialog-title>User Info of {{data.user_ip}}</h2>
+<md-dialog-content>
+    <md-list>
+        <md-list-item>
+            Nickname: {{data.nickname}}
+        </md-list-item>
+        <md-list-item>
+        </md-list-item>
+    </md-list>
+    Confirm to add this user into the chat?
+</md-dialog-content>
+<md-dialog-actions>
+    <button md-button [md-dialog-close]="false">No</button>
+    <button md-button [md-dialog-close]="true">Yes</button>
+</md-dialog-actions>

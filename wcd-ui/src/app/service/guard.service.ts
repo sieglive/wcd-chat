@@ -47,7 +47,6 @@ export class AddressGuard implements CanActivate, CanLoad {
 
         const a = result.subscribe(
             data => {
-                console.log(data);
                 if (data['result'] === 1) {
                     this._account.info = data['data'];
                     res.next(true);
@@ -82,7 +81,6 @@ export class AddressGuard implements CanActivate, CanLoad {
 
         const a = result.subscribe(
             data => {
-                console.log(data);
                 if (data['result'] === 1) {
                     res.next(true);
                 } else {
@@ -122,7 +120,6 @@ export class NickGuard implements CanActivate, CanLoad {
 
         const a = result.subscribe(
             data => {
-                console.log(data);
                 if (data['result'] === 1) {
                     res.next(true);
                 } else {
@@ -166,7 +163,6 @@ export class AuthGuard {
 
         const a = result.subscribe(
             data => {
-                console.log(data);
                 if (data['result'] === 1) {
                     this._router.navigate(['/chat-list']);
                     res.next(true);
@@ -218,7 +214,6 @@ export class ChatGuard {
                 } else {
                     this._router.navigate(['/chat-list']);
                     this.raiseSnackBar('Permission Deny.', 'OK', () => {
-                        console.log('The snack-bar action was triggered!');
                     });
                     res.next(false);
                 }
