@@ -180,7 +180,7 @@ export class ChatListComponent implements OnInit {
                     return false;
                 }
                 console.log(data);
-                const dialogRef = this.dialog.open(AppUserinfoComponent, {
+                const dialogRef = this.dialog.open(UserinfoComponent, {
                     height: '300px',
                     width: '600px',
                     data: {
@@ -220,21 +220,95 @@ export class ChatListComponent implements OnInit {
                 this._router.navigate(['/error'], navigationExtras);
             });
     }
+
+    editPassword(event) {
+        if (event && event.key !== 'Enter') {
+            return event;
+        }
+
+        this._http.get(
+            '/middle/account?member_ip=' + this.user_info['user_ip']
+        ).subscribe(
+            data => {
+                if (!data['data']) {
+                    const message = 'This user not exists.';
+                    this.raiseSnackBar(message, 'OK', () => {
+                        console.log('The snack-bar action was triggered!');
+                    });
+                    return false;
+                }
+
+                const dialogRef = this.dialog.open(PasswordComponent, {
+                    height: '340',
+                    width: '600px',
+                    data: {
+                        user_ip: data['data']['user_ip'],
+                        nickname: data['data']['nickname'],
+                    }
+                });
+
+                dialogRef.afterClosed().subscribe(
+                    res => {
+                        console.log(res);
+                        // if (res) {
+                        //     this._http.post(
+                        //         '/middle/account/info', { nickname: res }
+                        //     ).subscribe(
+                        //         add_member_data => {
+                        //             console.log(add_member_data);
+                        //         },
+                        //         error => {
+                        //             const navigationExtras: NavigationExtras = {
+                        //                 queryParams: {
+                        //                     'message': 'Sorry, We can not contact chat server now.',
+                        //                     'sub_message': 'Contact Administrator to fix that.'
+                        //                 }
+                        //             };
+                        //             this._router.navigate(['/error'], navigationExtras);
+                        //         });
+                        // }
+                    });
+            },
+            error => {
+                const navigationExtras: NavigationExtras = {
+                    queryParams: {
+                        'message': 'Sorry, We can not contact chat server now.',
+                        'sub_message': 'Contact Administrator to fix that.'
+                    }
+                };
+                this._router.navigate(['/error'], navigationExtras);
+            });
+    }
 }
 
 
 @Component({
     selector: 'app-userinfo',
     templateUrl: './userinfo.component.html',
+    styleUrls: ['./chat-list.component.scss']
 })
-export class AppUserinfoComponent {
-
+export class UserinfoComponent {
+    public nickname = '';
     constructor(
-        public dialogRef: MdDialogRef<AppUserinfoComponent>,
+        public dialogRef: MdDialogRef<UserinfoComponent>,
         @Inject(MD_DIALOG_DATA) public data: any,
     ) { }
 }
 
+@Component({
+    selector: 'app-password',
+    templateUrl: './password.component.html',
+    styleUrls: ['./chat-list.component.scss']
+})
+export class PasswordComponent {
+    public old_password = '';
+    public new_password = '';
+    public confirm_password = '';
+    constructor(
+        public dialogRef: MdDialogRef<UserinfoComponent>,
+        @Inject(MD_DIALOG_DATA) public data: any,
+    ) { }
+}
 
 
 /** Constants used to fill up our data base. */

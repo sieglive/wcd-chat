@@ -13,6 +13,7 @@ import 'hammerjs';
 
 import { AppComponent } from './app.component';
 import { AccountService, AddressGuard, AuthGuard, NickGuard, ChatGuard } from './service/guard.service';
+import { MessageService } from './service/message.service';
 
 const wcd_routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -45,6 +46,7 @@ const wcd_routes: Routes = [
         NickGuard,
         ChatGuard,
         AccountService,
+        MessageService,
         MdDialog],
     bootstrap: [AppComponent]
 })

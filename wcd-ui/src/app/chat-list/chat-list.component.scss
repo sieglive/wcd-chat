@@ -39,3 +39,12 @@
 .action-button {
     margin-right: 10px;
 }
+
+.mat-dialog-content {
+    .mat-input-container {
+        width: 100%;
+        .mat-input {
+            width: 80%;
+        }
+    }
+}

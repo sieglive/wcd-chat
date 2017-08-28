@@ -5,7 +5,7 @@ import { MaterialModule } from '@angular/material';
 import { RouterModule, Routes } from '@angular/router';
 import { MdDialog, MdDialogRef } from '@angular/material';
 
-import { ChatComponent, AppUserinfoComponent } from './chat.component';
+import { ChatComponent, AppUserinfoComponent, WcdAvatorDirective } from './chat.component';
 
 const chat_routes: Routes = [
     { path: '', component: ChatComponent },
@@ -21,6 +21,6 @@ const chat_routes: Routes = [
     entryComponents: [
         AppUserinfoComponent
     ],
-    declarations: [ChatComponent, AppUserinfoComponent]
+    declarations: [ChatComponent, AppUserinfoComponent, WcdAvatorDirective]
 })
 export class ChatModule { }

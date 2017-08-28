@@ -1,9 +1,10 @@
-import { Component, OnInit, Inject, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Directive, Input, OnInit, Inject, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { MdDialog, MdDialogRef, MD_DIALOG_DATA, MdSnackBar } from '@angular/material';
 
 import { AccountService } from '../service/guard.service';
+import { MessageService } from '../service/message.service';
 
 import { DatePipe } from '@angular/common';
 
@@ -25,7 +26,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
     public new_member = '';
     public show_message: any;
 
-    @ViewChild('target') target;
+    @ViewChild('chatShow') target;
 
     constructor(
         private _http: HttpClient,
@@ -35,6 +36,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
         public dialog: MdDialog,
         public snack_bar: MdSnackBar,
         private _account: AccountService,
+        private _message: MessageService,
     ) { }
 
     ngOnInit() {
@@ -49,7 +51,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
                 this.getChatInfo(this.chat_id);
             });
         this.getMessageList();
-        setInterval(() => { this.getMessageList(); }, 3000);
+        setInterval(() => { this.getMessageList(); }, 1000);
     }
     ngAfterViewInit() {
         // setTimeout(
@@ -74,19 +76,29 @@ export class ChatComponent implements OnInit, AfterViewInit {
             '/middle/message?chat_id=' + this.chat_id + '&start=' + this.start_time
         ).subscribe(
             data => {
-                const last_end_time = this.end_time;
-                if (data['data']) {
-                    this.message_list = data['data']['msg_list'];
-                    // this.start_time = data['data']['end_time'];
-                    this.end_time = data['data']['end_time'];
+
+                if (data['result'] === 1) {
+                    const last_end_time = this.end_time;
+                    if (data['data']) {
+                        this._message.info = data['data']['msg_list'];
+                        this.start_time = data['data']['end_time'];
+                        console.log(this.start_time);
+                        this.end_time = data['data']['end_time'];
+                        this._message.info.subscribe(value => {
+                            this.message_list = value;
+                        });
+                    }
+                    if (last_end_time !== this.end_time) {
+                        setTimeout(
+                            () => {
+                                this.target.nativeElement.scrollTop = this.target.nativeElement.scrollHeight;
+                                console.log(this.target);
+                            }, 0);
+                    }
+                } else if (data['status'] === 3152) {
+
                 }
-                if (last_end_time !== this.end_time) {
-                    setTimeout(
-                        () => {
-                            this.target.nativeElement.scrollTop = this.target.nativeElement.scrollHeight;
-                            console.log(this.target);
-                        }, 0);
-                }
+
             },
             error => {
                 const navigationExtras: NavigationExtras = {
@@ -128,7 +140,6 @@ export class ChatComponent implements OnInit, AfterViewInit {
         if (!this.new_member) {
             const message = 'Ip Adress should not be empty.';
             this.raiseSnackBar(message, 'OK', () => {
-                console.log('The snack-bar action was triggered!');
             });
             return false;
         }
@@ -141,11 +152,10 @@ export class ChatComponent implements OnInit, AfterViewInit {
                 if (!data['data']) {
                     const message = 'This user not exists.';
                     this.raiseSnackBar(message, 'OK', () => {
-                        console.log('The snack-bar action was triggered!');
+
                     });
                     return false;
                 }
-                console.log(data);
                 const dialogRef = this.dialog.open(AppUserinfoComponent, {
                     height: '300px',
                     width: '600px',
@@ -208,12 +218,20 @@ export class ChatComponent implements OnInit, AfterViewInit {
     sendMessage(event) {
         if (event && event.key !== 'Enter') {
             return event;
-        }
-        if (!this.message) {
+        } else if (event && event.key === 'Enter' && event.altKey) {
+            console.log(event);
+            console.log('altKey', event.altKey);
+            this.message += '\n';
             return false;
         }
+        console.log(typeof this.message);
+        if (!this.message) {
+            console.log('injudge', this.message);
+            return false;
+        }
+        console.log(this.message);
         const new_message = this.message;
-        this.message = '';
+        this.message = null;
         this._http.put(
             '/middle/message',
             {
@@ -233,6 +251,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
                 };
                 this._router.navigate(['/error'], navigationExtras);
             });
+        return false;
     }
 }
 
@@ -274,4 +293,43 @@ export class AppUserinfoComponent {
         public dialogRef: MdDialogRef<AppUserinfoComponent>,
         @Inject(MD_DIALOG_DATA) public data: any,
     ) { }
+}
+
+@Directive({
+    selector: '[appWcdAvator]',
+})
+export class WcdAvatorDirective implements OnInit {
+    @Input() wcdAvatorColor: string;
+    private _color = [
+        'red', 'pink', 'purple', 'deep-purple', 'indigo', 'blue', 'light-blue',
+        'cyan', 'teal', 'green', 'light-green', 'lime', 'yellow', 'orange',
+        'amber', 'deep-orange'
+    ];
+    private _color_palette = {
+        'red': ['#ef5350', 'black'],
+        'pink': ['#ec407a', 'black'],
+        'purple': ['#ab47bc', 'white'],
+        'deep-purple': ['#7e57c2', 'white'],
+        'indigo': ['#5c6bc0', 'white'],
+        'blue': ['#42a5f5', 'black'],
+        'light-blue': ['#29b6f6', 'black'],
+        'cyan': ['#26c6da', 'black'],
+        'teal': ['#26a69a', 'black'],
+        'green': ['#66bb6a', 'black'],
+        'light-green': ['#9ccc65', 'black'],
+        'lime': ['#d4e157', 'black'],
+        'yellow': ['#ffee58', 'black'],
+        'orange': ['#ffa726', 'black'],
+        'amber': ['#ffca28', 'black'],
+        'deep-orange': ['#ff7043', 'black']
+    };
+
+    constructor(private el: ElementRef) {
+    }
+
+    ngOnInit() {
+        this.el.nativeElement.style.backgroundColor = this._color_palette[this.wcdAvatorColor][0];
+        this.el.nativeElement.style.color = this._color_palette[this.wcdAvatorColor][1];
+        console.log(this.el);
+    }
 }
