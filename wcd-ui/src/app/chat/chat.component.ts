@@ -1,11 +1,29 @@
-import { Component, Directive, Input, OnInit, Inject, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
-import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
+import {
+    Component,
+    Directive,
+    Input,
+    OnInit,
+    Inject,
+    ElementRef,
+    ViewChild,
+    AfterViewInit
+} from '@angular/core';
+import {
+    ActivatedRoute,
+    Router,
+    NavigationExtras
+} from '@angular/router';
+import {
+    MdDialog,
+    MdDialogRef,
+    MD_DIALOG_DATA,
+    MdSnackBar
+} from '@angular/material';
 import { HttpClient } from '@angular/common/http';
-import { MdDialog, MdDialogRef, MD_DIALOG_DATA, MdSnackBar } from '@angular/material';
-
 import { AccountService } from '../service/guard.service';
-import { MessageService } from '../service/message.service';
-
+import { MessageService, WcdAvatorDirective } from '../service/message.service';
+import { SnackBarService } from '../service/snack-bar.service';
+import { WindowUtilsService } from '../service/window-utils.service';
 import { DatePipe } from '@angular/common';
 
 @Component({
@@ -13,9 +31,8 @@ import { DatePipe } from '@angular/common';
     templateUrl: './chat.component.html',
     styleUrls: ['./chat.component.scss']
 })
-export class ChatComponent implements OnInit, AfterViewInit {
-    public message = '';
-    public message_list = [];
+export class ChatComponent implements OnInit {
+
     public user_info: object = {};
     public start_time = 0;
     public end_time = 0;
@@ -24,26 +41,37 @@ export class ChatComponent implements OnInit, AfterViewInit {
     public member_list = [];
     public member_dict = {};
     public new_member = '';
+    public message = '';
+    public message_list = [];
     public show_message: any;
-
-    @ViewChild('chatShow') target;
+    @ViewChild('chatShow') chat_show;
 
     constructor(
         private _http: HttpClient,
         private _route: ActivatedRoute,
         private _router: Router,
         private _el: ElementRef,
-        public dialog: MdDialog,
-        public snack_bar: MdSnackBar,
+        private _snack_bar: SnackBarService,
         private _account: AccountService,
         private _message: MessageService,
+        private _win_utils: WindowUtilsService,
+        public dialog: MdDialog,
     ) { }
 
     ngOnInit() {
-        console.log('init');
-        this._account.info.subscribe(info => {
-            this.user_info = info;
-        });
+        if (Notification && Notification['permission'] !== 'granted') {
+            Notification.requestPermission(
+                status => {
+                    if (Notification['permission'] !== status) {
+                        Notification['permission'] = status;
+                    }
+                });
+        }
+
+        this._account.info.subscribe(
+            info => {
+                this.user_info = info;
+            });
 
         this._route.paramMap.subscribe(
             value => {
@@ -53,52 +81,46 @@ export class ChatComponent implements OnInit, AfterViewInit {
         this.getMessageList();
         setInterval(() => { this.getMessageList(); }, 1000);
     }
-    ngAfterViewInit() {
-        // setTimeout(
-        //     () => {
-        //         this.target.nativeElement.scrollTop = this.target.nativeElement.scrollHeight;
-        //     }, 0);
-    }
-
-    raiseSnackBar(message: string, action_name: string, action) {
-        const snack_ref = this.snack_bar.open(
-            message,
-            action_name,
-            {
-                duration: 2000,
-            }
-        );
-        snack_ref.onAction().subscribe(action);
-    }
 
     getMessageList() {
         this._http.get(
             '/middle/message?chat_id=' + this.chat_id + '&start=' + this.start_time
         ).subscribe(
             data => {
-
                 if (data['result'] === 1) {
-                    const last_end_time = this.end_time;
-                    if (data['data']) {
-                        this._message.info = data['data']['msg_list'];
-                        this.start_time = data['data']['end_time'];
-                        console.log(this.start_time);
-                        this.end_time = data['data']['end_time'];
-                        this._message.info.subscribe(value => {
+                    const temp_start_time = this.start_time;
+                    const temp_end_time = this.end_time;
+
+                    this._message.info = data['data']['msg_list'];
+                    this.start_time = data['data']['end_time'];
+                    this.end_time = data['data']['end_time'];
+
+                    this._message.info.subscribe(
+                        value => {
+                            const last_msg = value[value.length - 1];
                             this.message_list = value;
+                            if (temp_start_time !== 0 && last_msg['user_ip'] !== this.user_info['user_ip'] && document.hidden) {
+                                const options: NotificationOptions = {
+                                    dir: 'auto',
+                                    lang: 'utf-8',
+                                    tag: this.member_dict[last_msg['user_ip']].nickname,
+                                    icon: '/assets/xiaohei.png',
+                                    body: last_msg['message']
+                                };
+                                const date = new Date(last_msg['msg_time']).toLocaleString();
+                                const note = new Notification(date, options);
+                                note.onclick = () => {
+                                    window.focus();
+                                    note.close();
+                                };
+                            }
                         });
-                    }
-                    if (last_end_time !== this.end_time) {
-                        setTimeout(
-                            () => {
-                                this.target.nativeElement.scrollTop = this.target.nativeElement.scrollHeight;
-                                console.log(this.target);
-                            }, 0);
+                    if (temp_end_time !== this.end_time) {
+                        this._win_utils.scrollBottom(this);
                     }
                 } else if (data['status'] === 3152) {
 
                 }
-
             },
             error => {
                 const navigationExtras: NavigationExtras = {
@@ -117,10 +139,13 @@ export class ChatComponent implements OnInit, AfterViewInit {
         ).subscribe(
             data => {
                 this.chat_info = data['data'];
+                this._win_utils.renderDocTitle(this.chat_info['chat_name']);
+
                 this.member_list = this.chat_info['chat_member'];
-                for (let i = 0; i < this.member_list.length; i++) {
-                    this.member_dict[this.member_list[i]['user_ip']] = this.member_list[i];
-                }
+                this.member_list.forEach(
+                    member => {
+                        this.member_dict[member['user_ip']] = member;
+                    });
             },
             error => {
                 const navigationExtras: NavigationExtras = {
@@ -138,53 +163,51 @@ export class ChatComponent implements OnInit, AfterViewInit {
             return event;
         }
         if (!this.new_member) {
-            const message = 'Ip Adress should not be empty.';
-            this.raiseSnackBar(message, 'OK', () => {
-            });
-            return false;
+            return this._snack_bar.raiseSnackBar('Ip Adress should not be empty.');
         }
-        const new_ip_adress = this.new_member;
-        this.new_member = '';
+
+        let new_ip_adress = '';
+        [new_ip_adress, this.new_member] = [this.new_member, new_ip_adress];
+
         this._http.get(
             '/middle/account?member_ip=' + new_ip_adress
         ).subscribe(
             data => {
                 if (!data['data']) {
-                    const message = 'This user not exists.';
-                    this.raiseSnackBar(message, 'OK', () => {
-
-                    });
-                    return false;
+                    return this._snack_bar.raiseSnackBar('This user not exists.');
                 }
-                const dialogRef = this.dialog.open(AppUserinfoComponent, {
-                    height: '300px',
-                    width: '600px',
-                    data: {
-                        user_ip: data['data']['user_ip'],
-                        nickname: data['data']['nickname'],
-                    }
-                });
+
+                const dialogRef = this.dialog.open(
+                    UserInfoComponent, {
+                        height: '300px',
+                        width: '600px',
+                        data: data['data'],
+                    });
 
                 dialogRef.afterClosed().subscribe(
                     res => {
                         if (res) {
-                            this._http.put(
-                                '/middle/chat-member', { member_ip: new_ip_adress, chat_id: this.chat_id }
-                            ).subscribe(
-                                add_member_data => {
-                                    this.getChatInfo(this.chat_id);
-                                },
-                                error => {
-                                    const navigationExtras: NavigationExtras = {
-                                        queryParams: {
-                                            'message': 'Sorry, We can not contact chat server now.',
-                                            'sub_message': 'Contact Administrator to fix that.'
-                                        }
-                                    };
-                                    this._router.navigate(['/error'], navigationExtras);
-                                });
+                            this.addMember(new_ip_adress);
                         }
                     });
+            },
+            error => {
+                const navigationExtras: NavigationExtras = {
+                    queryParams: {
+                        'message': 'Sorry, We can not contact chat server now.',
+                        'sub_message': 'Contact Administrator to fix that.'
+                    }
+                };
+                this._router.navigate(['/error'], navigationExtras);
+            });
+    }
+
+    addMember(new_ip_adress) {
+        this._http.put(
+            '/middle/chat-member', { member_ip: new_ip_adress, chat_id: this.chat_id }
+        ).subscribe(
+            data => {
+                this.getChatInfo(this.chat_id);
             },
             error => {
                 const navigationExtras: NavigationExtras = {
@@ -201,7 +224,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
         this._http.delete(
             '/middle/chat-member?member_ip=' + drop_ip_adress + '&chat_id=' + this.chat_id
         ).subscribe(
-            drop_member_data => {
+            data => {
                 this.getChatInfo(this.chat_id);
             },
             error => {
@@ -219,19 +242,16 @@ export class ChatComponent implements OnInit, AfterViewInit {
         if (event && event.key !== 'Enter') {
             return event;
         } else if (event && event.key === 'Enter' && event.altKey) {
-            console.log(event);
-            console.log('altKey', event.altKey);
             this.message += '\n';
             return false;
         }
-        console.log(typeof this.message);
         if (!this.message) {
-            console.log('injudge', this.message);
             return false;
         }
-        console.log(this.message);
-        const new_message = this.message;
-        this.message = null;
+
+        let new_message = '';
+        [new_message, this.message] = [this.message, new_message];
+
         this._http.put(
             '/middle/message',
             {
@@ -257,79 +277,14 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
 @Component({
     selector: 'app-userinfo',
-    template: `
-    <h2 md-dialog-title>User Info of {{data.user_ip}}</h2>
-    <md-dialog-content>
-        <md-list>
-            <md-list-item>
-                Nickname: {{data.nickname}}
-            </md-list-item>
-            <md-list-item>
-            </md-list-item>
-        </md-list>
-        Confirm to add this user into the chat?
-    </md-dialog-content>
-    <md-dialog-actions>
-        <button md-button [md-dialog-close]="false">No</button>
-        <button md-button [md-dialog-close]="true">Yes</button>
-    </md-dialog-actions>
-    `,
-    // styles: [`
-    // .mat-dialog-container {
-    //     box-shadow: 0 11px 15px -7px rgba(0,0,0,.2), 0 24px 38px 3px rgba(0,0,0,.14), 0 9px 46px 8px rgba(0,0,0,.12);
-    //     display: block;
-    //     padding: 24px;
-    //     border-radius: 2px;
-    //     box-sizing: border-box;
-    //     overflow: auto;
-    //     max-width: 80vw;
-    //     width: 100%;
-    //     height: 100%;
-    // }`]
+    templateUrl: './user-info.component.html',
 })
-export class AppUserinfoComponent {
+export class UserInfoComponent {
 
     constructor(
-        public dialogRef: MdDialogRef<AppUserinfoComponent>,
+        public dialogRef: MdDialogRef<UserInfoComponent>,
         @Inject(MD_DIALOG_DATA) public data: any,
     ) { }
 }
 
-@Directive({
-    selector: '[appWcdAvator]',
-})
-export class WcdAvatorDirective implements OnInit {
-    @Input() wcdAvatorColor: string;
-    private _color = [
-        'red', 'pink', 'purple', 'deep-purple', 'indigo', 'blue', 'light-blue',
-        'cyan', 'teal', 'green', 'light-green', 'lime', 'yellow', 'orange',
-        'amber', 'deep-orange'
-    ];
-    private _color_palette = {
-        'red': ['#ef5350', 'black'],
-        'pink': ['#ec407a', 'black'],
-        'purple': ['#ab47bc', 'white'],
-        'deep-purple': ['#7e57c2', 'white'],
-        'indigo': ['#5c6bc0', 'white'],
-        'blue': ['#42a5f5', 'black'],
-        'light-blue': ['#29b6f6', 'black'],
-        'cyan': ['#26c6da', 'black'],
-        'teal': ['#26a69a', 'black'],
-        'green': ['#66bb6a', 'black'],
-        'light-green': ['#9ccc65', 'black'],
-        'lime': ['#d4e157', 'black'],
-        'yellow': ['#ffee58', 'black'],
-        'orange': ['#ffa726', 'black'],
-        'amber': ['#ffca28', 'black'],
-        'deep-orange': ['#ff7043', 'black']
-    };
 
-    constructor(private el: ElementRef) {
-    }
-
-    ngOnInit() {
-        this.el.nativeElement.style.backgroundColor = this._color_palette[this.wcdAvatorColor][0];
-        this.el.nativeElement.style.color = this._color_palette[this.wcdAvatorColor][1];
-        console.log(this.el);
-    }
-}

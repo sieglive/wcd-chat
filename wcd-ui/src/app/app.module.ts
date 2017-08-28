@@ -1,19 +1,19 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { MaterialModule, MdTableModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { CdkTableModule } from '@angular/cdk';
-import { MdDialog, MdDialogRef } from '@angular/material';
-
-import { MdSnackBar } from '@angular/material';
+import { NgModule } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { RouterModule, Routes } from '@angular/router';
+import { MaterialModule, MdTableModule, MdDialog, MdDialogRef, MdSnackBar } from '@angular/material';
+import { CdkTableModule } from '@angular/cdk';
 import 'hammerjs';
 
 import { AppComponent } from './app.component';
 import { AccountService, AddressGuard, AuthGuard, NickGuard, ChatGuard } from './service/guard.service';
 import { MessageService } from './service/message.service';
+import { SnackBarService } from './service/snack-bar.service';
+import { WindowUtilsService } from './service/window-utils.service';
+import { ErrorHandlerService } from './service/error-handler.service';
 
 const wcd_routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -47,6 +47,9 @@ const wcd_routes: Routes = [
         ChatGuard,
         AccountService,
         MessageService,
+        SnackBarService,
+        WindowUtilsService,
+        ErrorHandlerService,
         MdDialog],
     bootstrap: [AppComponent]
 })

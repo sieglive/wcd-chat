@@ -4,8 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { MaterialModule } from '@angular/material';
 import { RouterModule, Routes } from '@angular/router';
 import { MdDialog, MdDialogRef } from '@angular/material';
+import { MessageService, WcdAvatorDirective } from '../service/message.service';
 
-import { ChatComponent, AppUserinfoComponent, WcdAvatorDirective } from './chat.component';
+import { ChatComponent, UserInfoComponent } from './chat.component';
+
 
 const chat_routes: Routes = [
     { path: '', component: ChatComponent },
@@ -19,8 +21,8 @@ const chat_routes: Routes = [
         RouterModule.forChild(chat_routes)
     ],
     entryComponents: [
-        AppUserinfoComponent
+        UserInfoComponent
     ],
-    declarations: [ChatComponent, AppUserinfoComponent, WcdAvatorDirective]
+    declarations: [ChatComponent, UserInfoComponent, WcdAvatorDirective]
 })
 export class ChatModule { }

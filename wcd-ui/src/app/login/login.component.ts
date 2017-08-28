@@ -49,7 +49,6 @@ export class LoginComponent implements OnInit {
         const result = this._http.get('/middle/nick_guard');
         const a = result.subscribe(
             data => {
-                console.log(data);
                 if (data['result'] === 1) {
                     this.nick_not_exists = true;
                     this.user_data.nickname = '';
@@ -105,7 +104,6 @@ export class LoginComponent implements OnInit {
 
         if (not_regular) {
             this.raiseSnackBar(message, 'OK', () => {
-                console.log('The snack-bar action was triggered!');
             });
             return false;
         }
@@ -122,9 +120,7 @@ export class LoginComponent implements OnInit {
                     this._router.navigate(['/chat-list']);
                 } else {
                     this.raiseSnackBar(data['msg'], 'OK', () => {
-                        console.log('Got it.');
                     });
-                    console.log(data);
                     return false;
                 }
             });
