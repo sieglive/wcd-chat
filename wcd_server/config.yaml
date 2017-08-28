@@ -10,7 +10,7 @@ server:
         prod: 6329
     expire_time: 3600
 
-access_mode: 'list' # reg | list
+access_mode: 'reg' # reg | list
 
 access_regex: ^10.11.1.([0-9]{1,3})$
 

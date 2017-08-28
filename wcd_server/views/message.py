@@ -5,6 +5,8 @@ from uuid import uuid1 as uuid
 from datetime import datetime
 import time
 
+from pprint import pprint
+
 from tornado.gen import coroutine
 from tornado.web import asynchronous
 
@@ -26,17 +28,47 @@ class ChatRoom(BaseHandler):
         args = self.parse_form_arguments([], ['chat_id'])
 
         if not args.chat_id:
-            chat_list = self.chat_list.find({'chat_create_time': {'$gt': 1}})
-            chat_list = [chat for chat in chat_list]
-            for chat in chat_list:
+            chat_info = self.chat_list.find({'chat_create_time': {'$gt': 1}})
+            chat_info = [chat for chat in chat_info]
+            for chat in chat_info:
                 if '_id' in chat:
                     del chat['_id']
         else:
-            chat_list = self.chat_list.find_one({'chat_id': args.chat_id})
-            if '_id' in chat_list:
-                del chat_list['_id']
+            chat_info = self.chat_list.find_one({'chat_id': args.chat_id})
+            if not chat_info:
+                return self.dump_fail_data(3104)
 
-        res = dict(result=1, status=0, msg='Successfully.', data=chat_list)
+            owner_info = self.wcd_user.find_one({
+                'user_ip':
+                chat_info['creator_ip']
+            })
+            if not owner_info:
+                return self.dump_fail_data(3106)
+
+            self.chat_list.update_one({
+                'chat_id': args.chat_id
+            }, {'$set': {
+                'creator_nick': owner_info['nickname']
+            }})
+
+            member_list = chat_info['chat_member']
+            member_detail = self.wcd_user.find({
+                'user_ip': {
+                    '$in': member_list
+                }
+            })
+
+            member_list = [{
+                'user_ip': member['user_ip'],
+                'nickname': member['nickname'],
+                'color': member['color']
+            } for member in member_detail]
+
+            chat_info['chat_member'] = member_list
+            if '_id' in chat_info:
+                del chat_info['_id']
+
+        res = dict(result=1, status=0, msg='Successfully.', data=chat_info)
         self.finish_with_json(res)
 
     @asynchronous
@@ -66,11 +98,7 @@ class ChatRoom(BaseHandler):
             creator_nick=_params.nickname,
             chat_secret=args.chat_secret,
             chat_create_time=int(time.time()),
-            chat_member=[
-                dict(
-                    user_ip=_params.user_ip,
-                    nickname=_params.nickname, )
-            ])
+            chat_member=[_params.user_ip], )
         self.chat_list.insert_one(chat_info)
         if '_id' in chat_info:
             del chat_info['_id']
@@ -120,9 +148,8 @@ class ChatMember(BaseHandler):
         if not chat_list:
             return self.dump_fail_data(3104)
 
-        member_list = [
-            member['user_ip'] for member in chat_list['chat_member']
-        ]
+        member_list = [member_ip for member_ip in chat_list['chat_member']]
+
         if _params.user_ip not in member_list:
             return self.dump_fail_data(3105)
 
@@ -155,14 +182,10 @@ class ChatMember(BaseHandler):
         #     return self.dump_fail_data(3150)
 
         chat_info = self.chat_list.update_one(
-            dict(chat_id=args.chat_id), {
-                '$addToSet': {
-                    'chat_member': {
-                        'user_ip': args.member_ip,
-                        'nickname': user_info['nickname']
-                    }
-                }
-            })
+            dict(chat_id=args.chat_id),
+            {'$addToSet': {
+                'chat_member': args.member_ip,
+            }})
 
         res = dict(result=1, status=0, msg='Successfully.', data=None)
         self.finish_with_json(res)
@@ -192,9 +215,7 @@ class ChatMember(BaseHandler):
         chat_info = self.chat_list.update_one(
             dict(chat_id=args.chat_id),
             {'$pull': {
-                'chat_member': {
-                    'user_ip': args.member_ip
-                }
+                'chat_member': args.member_ip
             }})
 
         res = dict(result=1, status=0, msg='Successfully.', data=None)
@@ -221,23 +242,27 @@ class Message(BaseHandler):
             'chat_id': args.chat_id,
             # 'msg_time': 1503575078
             'msg_time': {
-                '$gte': int(args.start)
-            },
-            'msg_time': {
+                '$gt': int(args.start),
                 '$lte': int(args.end)
             }
         }
+        # pprint(query_dict, indent=4)
 
         msg_list = self.message_list.find(query_dict)
 
         msg_list = [msg for msg in msg_list]
+        if not msg_list:
+            return self.dump_fail_data(3152)
+
         last_msg_time = 0
         for msg in msg_list:
+            # print(msg['msg_time'])
             if msg['msg_time'] > last_msg_time:
                 last_msg_time = msg['msg_time']
             del msg['_id']
             del msg['date']
 
+        # pprint(msg_list, indent=4)
         res = dict(
             result=1,
             status=0,

@@ -25,11 +25,14 @@ STATUS_DICT = dict([
     (3012, 'Address is not allowed.'),
     (3013, 'Account is not exists, please sign up.'),
     (3014, 'Nick Name already set.'),
+    (3015, 'Either "nickname" or "password" should be in arguments.'),
     (3100, 'Permission Deny.'),
     (3104, 'Chat Not Exists.'),
     (3105, 'Can not enter this chat.'),
+    (3106, 'Chat owner missed.'),
     (3150, 'Chat Member Exists.'),
     (3151, 'Chat Member Not Exists.'),
+    (3152, 'No Message Found.'),
     ])
 
 

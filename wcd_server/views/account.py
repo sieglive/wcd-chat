@@ -2,6 +2,7 @@
 """Views' Module of Account."""
 import re
 from hashlib import md5
+from random import choice
 from uuid import uuid1 as uuid
 from tornado.gen import coroutine
 from tornado.web import asynchronous
@@ -81,13 +82,24 @@ class AccountInfo(BaseHandler):
         else:
             _user_id, _params = res
 
-        args = self.parse_json_arguments(['nickname'])
+        args = self.parse_json_arguments([])
 
-        user_info = self.wcd_user.update_one({
-            'user_ip': self.request.remote_ip
-        }, {'$set': {
-            'nickname': args.nickname
-        }})
+        if args.nickname:
+            user_info = self.wcd_user.update_one({
+                'user_ip':
+                self.request.remote_ip
+            }, {'$set': {
+                'nickname': args.nickname
+            }})
+        elif args.password:
+            user_info = self.wcd_user.update_one({
+                'user_ip':
+                self.request.remote_ip
+            }, {'$set': {
+                'password': md5(args.password.encode()).hexdigest()
+            }})
+        else:
+            return self.dump_fail_data(3015)
 
         user_info = self.wcd_user.find_one(
             dict(user_ip=self.request.remote_ip))
@@ -107,6 +119,12 @@ class AccountInfo(BaseHandler):
 class Account(BaseHandler):
     """Handler account stuff."""
 
+    color_palette = [
+        'red', 'pink', 'purple', 'deep-purple', 'indigo', 'blue', 'light-blue',
+        'cyan', 'teal', 'green', 'light-green', 'lime', 'yellow', 'orange',
+        'amber', 'deep-orange'
+    ]
+
     @asynchronous
     @coroutine
     def get(self, *_args, **_kwargs):
@@ -125,7 +143,8 @@ class Account(BaseHandler):
 
         user_params = dict(
             user_ip=user_info['user_ip'],
-            nickname=user_info['nickname'], )
+            nickname=user_info['nickname'],
+            color=user_info['color'], )
         res = dict(result=1, status=0, msg='successfully.', data=user_params)
         self.finish_with_json(res)
 
@@ -139,7 +158,8 @@ class Account(BaseHandler):
                 'user_ip': self.request.remote_ip,
                 'nickname': args.nickname,
                 'password': md5(args.password.encode()).hexdigest(),
-                'ac_code': uuid().hex
+                'ac_code': uuid().hex,
+                'color': choice(self.color_palette)
             }
             self.wcd_user.insert_one(user_info)
         elif md5(args.password.encode()).hexdigest() != user_info['password']:

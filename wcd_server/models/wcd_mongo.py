@@ -9,7 +9,7 @@ M_CLIENT = MongoClient(config.mongo.client).__getattr__(config.mongo.db)
 
 MESSAGE_LIST = M_CLIENT.message_list
 MESSAGE_LIST.create_index('user_id')
-MESSAGE_LIST.ensure_index("date", expireAfterSeconds=3600)
+MESSAGE_LIST.ensure_index("date", expireAfterSeconds=3600 * 24)
 
 WCD_USER = M_CLIENT.wcd_user
 WCD_USER.create_index('user_id')

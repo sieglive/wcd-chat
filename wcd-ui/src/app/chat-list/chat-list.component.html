@@ -12,9 +12,10 @@
                 </div>
             </md-grid-tile>
             <md-grid-tile colspan="1" rowspan="2">
-                <button md-icon-button style="font-size: 10em" [mdMenuTriggerFor]="menu"><i class="fa fa-frown-o fa-4" aria-hidden="true"></i></button>
+                <button md-icon-button style="font-size: 10em; text-align: left;" [mdMenuTriggerFor]="menu"><i class="fa fa-smile-o" aria-hidden="true"></i></button>
                 <md-menu #menu="mdMenu">
                     <button md-menu-item (click)="editProfile(null)"><md-icon>mode_edit</md-icon><span>Edit Profile</span></button>
+                    <button md-menu-item (click)="editPassword(null)"><md-icon>mode_edit</md-icon><span>Change Password</span></button>
                 </md-menu>
             </md-grid-tile>
             <md-grid-tile colspan="2">
