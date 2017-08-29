@@ -2,10 +2,13 @@
 """Config Module."""
 import os
 import yaml
-from tornado.options import define
+from tornado.options import define, options
 
-_ENV = 'prod'
 define('port', default=0)
+define('env', default='test')
+
+options.parse_command_line()
+_ENV = options.env
 
 
 class Config:

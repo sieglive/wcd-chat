@@ -19,7 +19,7 @@ import {
     MD_DIALOG_DATA,
     MdSnackBar
 } from '@angular/material';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AccountService } from '../service/guard.service';
 import { MessageService, WcdAvatorDirective } from '../service/message.service';
 import { SnackBarService } from '../service/snack-bar.service';
@@ -59,15 +59,12 @@ export class ChatComponent implements OnInit {
     ) { }
 
     ngOnInit() {
-        if (Notification && Notification['permission'] !== 'granted') {
-            Notification.requestPermission(
-                status => {
-                    if (Notification['permission'] !== status) {
-                        Notification['permission'] = status;
-                    }
-                });
-        }
 
+        this._http.get('/inner/asdasdasd').subscribe(
+            data => {
+                console.log('inner request', data);
+            }
+        );
         this._account.info.subscribe(
             info => {
                 this.user_info = info;
@@ -79,7 +76,7 @@ export class ChatComponent implements OnInit {
                 this.getChatInfo(this.chat_id);
             });
         this.getMessageList();
-        setInterval(() => { this.getMessageList(); }, 1000);
+        setInterval(() => { this.getMessageList(); }, 3000);
     }
 
     getMessageList() {
@@ -95,24 +92,49 @@ export class ChatComponent implements OnInit {
                     this.start_time = data['data']['end_time'];
                     this.end_time = data['data']['end_time'];
 
+                    console.log(this._message.msg_info.value);
                     this._message.info.subscribe(
                         value => {
-                            const last_msg = value[value.length - 1];
-                            this.message_list = value;
-                            if (temp_start_time !== 0 && last_msg['user_ip'] !== this.user_info['user_ip'] && document.hidden) {
-                                const options: NotificationOptions = {
-                                    dir: 'auto',
-                                    lang: 'utf-8',
-                                    tag: this.member_dict[last_msg['user_ip']].nickname,
-                                    icon: '/assets/xiaohei.png',
-                                    body: last_msg['message']
-                                };
-                                const date = new Date(last_msg['msg_time']).toLocaleString();
-                                const note = new Notification(date, options);
-                                note.onclick = () => {
-                                    window.focus();
-                                    note.close();
-                                };
+                            const msg_list = value.msg_list;
+                            const last_msg = msg_list[msg_list.length - 1];
+                            this.message_list = msg_list;
+                            if (temp_start_time !== 0) {
+                                if (last_msg['user_ip'] !== this.user_info['user_ip']) {
+                                    if (document.hidden || !window['window_active']) {
+                                        console.log('call service worker', document.hidden, window['window_active']);
+                                        let notice_msg;
+                                        if (last_msg['message'].length > 200) {
+                                            notice_msg = last_msg['message'].slice(0, 200) + '...';
+                                        } else {
+                                            notice_msg = last_msg['message'];
+                                        }
+                                        console.log(notice_msg);
+
+                                        const notice_data = {
+                                            message: [
+                                                this.member_dict[last_msg['user_ip']].nickname + ':',
+                                                notice_msg
+                                            ],
+                                            msg_time: last_msg['msg_time']
+                                        };
+                                        const notice_str = encodeURIComponent(JSON.stringify(notice_data));
+
+                                        this._http.get('/inner/callnotification/' + notice_str).subscribe();
+                                        // const options: NotificationOptions = {
+                                        //     dir: 'auto',
+                                        //     lang: 'utf-8',
+                                        //     tag: this.member_dict[last_msg['user_ip']].nickname,
+                                        //     icon: '/assets/xiaohei.png',
+                                        //     body: last_msg['message']
+                                        // };
+                                        // const date = new Date(last_msg['msg_time']).toLocaleString();
+                                        // const note = new Notification(date, options);
+                                        // note.onclick = () => {
+                                        //     window.focus();
+                                        //     note.close();
+                                        // };
+                                    }
+                                }
                             }
                         });
                     if (temp_end_time !== this.end_time) {

@@ -59,15 +59,27 @@ class TestHandler(BaseHandler):
         self.finish_with_json(res)
 
 
+class ServiceWorkerHandler(BaseHandler):
+    """Test method."""
+
+    def get(self, *_args, **kwargs):
+        """Test GET."""
+        self.set_header("Content-Type", "application/javascript")
+        with open(
+            '../wcd-ui/src/assets/js/service-worker.js', 'rb'
+        ) as sw_file:
+            self.finish(sw_file.read())
+
+
 def main():
     """Esign DB program main function."""
 
-    options.parse_command_line()
     handlers = [
         (r'/', IndexHandler),
         (r'/text', TextHandler),
         (r'/back/api/explain', TextHandler),
         (r'/test(?P<path>.*)?', TestHandler),
+        (r'/service-worker.js', ServiceWorkerHandler),
     ]
 
     handlers += [(f'/middle{handler[0]}', handler[1])
