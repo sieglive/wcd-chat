@@ -164,9 +164,9 @@ export class AuthGuard {
         const a = result.subscribe(
             data => {
                 if (data['result'] === 1) {
-                    this._router.navigate(['/chat-list']);
                     res.next(true);
                 } else {
+                    this._router.navigate(['/login']);
                     res.next(true);
                 }
             },

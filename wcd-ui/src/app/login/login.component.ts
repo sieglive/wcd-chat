@@ -46,8 +46,23 @@ export class LoginComponent implements OnInit {
     ) { }
 
     ngOnInit() {
-        const result = this._http.get('/middle/nick_guard');
-        const a = result.subscribe(
+        this._http.get('/middle/check_auth').subscribe(
+            data => {
+                if (data['result'] === 1) {
+                    this._router.navigate(['/chat-list']);
+                }
+            },
+            error => {
+                const navigationExtras: NavigationExtras = {
+                    queryParams: {
+                        'message': 'Sorry, We can not contact chat server now.',
+                        'sub_message': 'Contact Administrator to fix that.'
+                    }
+                };
+                this._router.navigate(['/error'], navigationExtras);
+            });
+
+        this._http.get('/middle/nick_guard').subscribe(
             data => {
                 if (data['result'] === 1) {
                     this.nick_not_exists = true;

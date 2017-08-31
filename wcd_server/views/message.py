@@ -202,10 +202,6 @@ class ChatMember(BaseHandler):
         if not user_info:
             return self.dump_fail_data(3011)
 
-        chat_info = self.chat_list.find_one(dict(chat_id=args.chat_id))
-
-        print('aaaaaa', args.member_ip, user_info['nickname'])
-
         chat_info = self.chat_list.update_one(
             dict(chat_id=args.chat_id),
             {'$pull': {
@@ -240,7 +236,8 @@ class Message(BaseHandler):
             }
         }
 
-        msg_list = self.message_list.find(query_dict)
+        msg_list = self.message_list.find(query_dict).sort('msg_time', -1)
+        msg_list = msg_list.limit(30)
 
         msg_list = [msg for msg in msg_list]
         if not msg_list:

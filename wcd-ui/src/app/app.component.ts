@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ToggleService } from './service/toggle.service';
 
 @Component({
     selector: 'app-root',
@@ -9,8 +10,9 @@ export class AppComponent implements OnInit {
     public message = '';
     title = 'app';
 
-
-
+    constructor(
+        private _toggle: ToggleService
+    ) { }
 
     urlB64ToUint8Array(base64String) {
         const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -45,6 +47,8 @@ export class AppComponent implements OnInit {
             window['window_active'] = false;
         };
 
+        this._toggle.fixStateOfshowNotification();
+
         if ('serviceWorker' in navigator && 'PushManager' in window) {
             navigator.serviceWorker.register(
                 'service-worker.js', {
@@ -60,9 +64,6 @@ export class AppComponent implements OnInit {
                         }
                     ).then(
                         PushSubscription => {
-                            console.log(PushSubscription.endpoint);
-                            console.log(PushSubscription.getKey('p256dh'));
-                            console.log(PushSubscription);
                         });
                     return true;
                 }).catch(
