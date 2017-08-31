@@ -24,6 +24,7 @@ import { AccountService } from '../service/guard.service';
 import { MessageService, WcdAvatorDirective } from '../service/message.service';
 import { SnackBarService } from '../service/snack-bar.service';
 import { WindowUtilsService } from '../service/window-utils.service';
+import { ToggleService } from '../service/toggle.service';
 import { DatePipe } from '@angular/common';
 
 @Component({
@@ -55,16 +56,19 @@ export class ChatComponent implements OnInit {
         private _account: AccountService,
         private _message: MessageService,
         private _win_utils: WindowUtilsService,
+        public toggle: ToggleService,
         public dialog: MdDialog,
     ) { }
 
     ngOnInit() {
-
-        this._http.get('/inner/asdasdasd').subscribe(
-            data => {
-                console.log('inner request', data);
-            }
-        );
+        this.start_time = 0;
+        this.end_time = 0;
+        this.chat_info = {};
+        this.member_list = [];
+        this.member_dict = {};
+        this.new_member = '';
+        this.message = '';
+        this.message_list = [];
         this._account.info.subscribe(
             info => {
                 this.user_info = info;
@@ -92,49 +96,38 @@ export class ChatComponent implements OnInit {
                     this.start_time = data['data']['end_time'];
                     this.end_time = data['data']['end_time'];
 
-                    console.log(this._message.msg_info.value);
                     this._message.info.subscribe(
                         value => {
-                            const msg_list = value.msg_list;
+                            const msg_list = value['msg_list'].sort((a, b) => {
+                                return a['msg_time'] - b['msg_time'];
+                            });
                             const last_msg = msg_list[msg_list.length - 1];
                             this.message_list = msg_list;
-                            if (temp_start_time !== 0) {
-                                if (last_msg['user_ip'] !== this.user_info['user_ip']) {
-                                    if (document.hidden || !window['window_active']) {
-                                        console.log('call service worker', document.hidden, window['window_active']);
-                                        let notice_msg;
-                                        if (last_msg['message'].length > 200) {
-                                            notice_msg = last_msg['message'].slice(0, 200) + '...';
-                                        } else {
-                                            notice_msg = last_msg['message'];
-                                        }
-                                        console.log(notice_msg);
 
-                                        const notice_data = {
-                                            message: [
-                                                this.member_dict[last_msg['user_ip']].nickname + ':',
-                                                notice_msg
-                                            ],
-                                            msg_time: last_msg['msg_time']
-                                        };
-                                        const notice_str = encodeURIComponent(JSON.stringify(notice_data));
+                            const canSendNotice = temp_start_time !== 0 &&
+                                last_msg['user_ip'] !== this.user_info['user_ip'] &&
+                                this._message.hasFresh() &&
+                                (document.hidden || !window['window_active']);
 
-                                        this._http.get('/inner/callnotification/' + notice_str).subscribe();
-                                        // const options: NotificationOptions = {
-                                        //     dir: 'auto',
-                                        //     lang: 'utf-8',
-                                        //     tag: this.member_dict[last_msg['user_ip']].nickname,
-                                        //     icon: '/assets/xiaohei.png',
-                                        //     body: last_msg['message']
-                                        // };
-                                        // const date = new Date(last_msg['msg_time']).toLocaleString();
-                                        // const note = new Notification(date, options);
-                                        // note.onclick = () => {
-                                        //     window.focus();
-                                        //     note.close();
-                                        // };
-                                    }
+                            if (canSendNotice) {
+                                const notice_data = {
+                                    title: this.member_dict[last_msg['user_ip']].nickname + ':',
+                                    message: [],
+                                    msg_time: last_msg['msg_time'],
+                                    focus: [
+                                        'chat',
+                                        this.chat_info['chat_id']
+                                    ]
+                                };
+
+                                if (last_msg['message'].length > 200) {
+                                    notice_data['message'].push(last_msg['message'].slice(0, 200) + '...');
+                                } else {
+                                    notice_data['message'].push(last_msg['message']);
                                 }
+
+                                const notice_str = encodeURIComponent(JSON.stringify(notice_data));
+                                this._http.get('/inner/callnotification/' + notice_str).subscribe();
                             }
                         });
                     if (temp_end_time !== this.end_time) {
@@ -294,6 +287,10 @@ export class ChatComponent implements OnInit {
                 this._router.navigate(['/error'], navigationExtras);
             });
         return false;
+    }
+
+    setNotification(change) {
+        this.toggle.showNotification = change.checked;
     }
 }
 

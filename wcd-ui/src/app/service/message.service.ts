@@ -7,7 +7,8 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 export class MessageService {
     public msg_info = new BehaviorSubject<object>({
         msg_list: [],
-        id_list: []
+        id_list: [],
+        fresh_info: false,
     });
 
     get info(): any {
@@ -27,7 +28,8 @@ export class MessageService {
 
         this.msg_info.next({
             msg_list: new_msg_list,
-            id_list: new_id_list
+            id_list: new_id_list,
+            fresh_info: true,
         });
     }
 
@@ -36,6 +38,14 @@ export class MessageService {
             if (this.msg_info.value['id_list'].indexOf(msg['msg_id']) !== -1) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    hasFresh() {
+        if (this.msg_info.value['fresh_info']) {
+            this.msg_info.value['fresh_info'] = false;
+            return true;
         }
         return false;
     }

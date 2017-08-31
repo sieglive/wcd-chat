@@ -10,6 +10,9 @@
                         <div class="content">
                             Chat Room
                         </div>
+                        <md-slide-toggle [checked]="toggle.showNotification" (change)="setNotification($event)">
+                            Notification
+                        </md-slide-toggle>
                     </div>
                 </div>
             </md-grid-tile>
@@ -19,13 +22,13 @@
                         <md-list-item *ngFor="let message of message_list">
                             <div *ngIf="message.user_ip !== user_info['user_ip'] ; else selfMessage" class="inline-message-box" style="text-align: left;">
                                 <button appWcdAvator [wcdAvatorColor]="member_dict[message.user_ip].color" md-mini-fab class="message-avator " mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ member_dict[message.user_ip].user_ip }}" mdTooltipPosition="above">{{member_dict[message.user_ip].nickname.slice(0,1) }}</button>
-                                <md-card class="message-container" mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ message.msg_time * 1000 | date: 'HH:mm' }}" mdTooltipPosition="left">
+                                <md-card class="message-container" mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ message.msg_time | date: 'HH:mm' }}" mdTooltipPosition="left">
                                     <p><span *ngFor="let msg_line of message.message.split('\n')">{{msg_line}}<br/></span></p>
                                 </md-card>
                             </div>
                             <ng-template #selfMessage>
                                 <div class="inline-message-box" style="text-align: right;">
-                                    <md-card class="message-container" mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ message.msg_time * 1000 | date: 'HH:mm' }}" mdTooltipPosition="left">
+                                    <md-card class="message-container" mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ message.msg_time | date: 'HH:mm' }}" mdTooltipPosition="left">
                                         <p><span *ngFor="let msg_line of message.message.split('\n')">{{msg_line}}<br/></span></p>
                                     </md-card>
                                     <button appWcdAvator [wcdAvatorColor]="member_dict[message.user_ip].color" md-mini-fab class="message-avator " mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ member_dict[message.user_ip].user_ip }}" mdTooltipPosition="above">{{member_dict[message.user_ip].nickname.slice(0,1) }}</button>

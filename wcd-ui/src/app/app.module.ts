@@ -14,12 +14,13 @@ import { MessageService } from './service/message.service';
 import { SnackBarService } from './service/snack-bar.service';
 import { WindowUtilsService } from './service/window-utils.service';
 import { ErrorHandlerService } from './service/error-handler.service';
+import { ToggleService } from './service/toggle.service';
 
 const wcd_routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
-    { path: 'login', loadChildren: 'app/login/login.module#LoginModule', canActivate: [AddressGuard, AuthGuard] },
+    { path: 'login', loadChildren: 'app/login/login.module#LoginModule', canActivate: [AddressGuard] },
     { path: 'chat/:chat_id', loadChildren: 'app/chat/chat.module#ChatModule', canActivate: [AddressGuard, ChatGuard] },
-    { path: 'chat-list', loadChildren: 'app/chat-list/chat-list.module#ChatListModule', canActivate: [AddressGuard] },
+    { path: 'chat-list', loadChildren: 'app/chat-list/chat-list.module#ChatListModule', canActivate: [AddressGuard, AuthGuard] },
     { path: 'error', loadChildren: 'app/error/error.module#ErrorModule' },
     { path: '**', redirectTo: '/error' }
 ];
@@ -50,6 +51,7 @@ const wcd_routes: Routes = [
         SnackBarService,
         WindowUtilsService,
         ErrorHandlerService,
+        ToggleService,
         MdDialog],
     bootstrap: [AppComponent]
 })
