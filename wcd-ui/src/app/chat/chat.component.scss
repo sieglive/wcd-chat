@@ -5,20 +5,38 @@
 }
 
 .chat-room {
-    .vertical-container::before {
-        content: '';
-        display: inline-block;
-        vertical-align: middle;
+    .chat-title {
         width: 100%;
         height: 100%;
-        font-size: 0;
-    }
-    .title-container {
-        display: inline-block;
-        width: 100%;
-        height: 100%;
-        text-align: center;
-        vertical-align: middle;
+        .content {
+            text-align: left;
+            // width: 100%;
+            font-family: Raleway, Arial, Helvetica, sans-serif;
+            font-size: 1.2em;
+            md-icon.mat-icon {
+                position: relative;
+                top: -2px;
+            }
+        }
+        .vertical-container::before {
+            content: '';
+            display: inline-block;
+            vertical-align: middle;
+            width: 0%;
+            height: 100%;
+            font-size: 0;
+        }
+        .vertical-container {
+            width: 100%;
+            height: 70%;
+            .title-container {
+                display: inline-block;
+                width: 97%;
+                height: 100%;
+                text-align: center;
+                vertical-align: middle;
+            }
+        }
     }
     .member-container {
         width: 100%;
