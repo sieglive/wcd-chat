@@ -9,6 +9,7 @@
                         </div>
                         <div class="content">
                             Chat Room
+
                         </div>
                         <md-slide-toggle [checked]="toggle.showNotification" (change)="setNotification($event)">
                             Notification
@@ -21,17 +22,24 @@
                     <md-list>
                         <md-list-item *ngFor="let message of message_list">
                             <div *ngIf="message.user_ip !== user_info['user_ip'] ; else selfMessage" class="inline-message-box" style="text-align: left;">
-                                <button appWcdAvator [wcdAvatorColor]="member_dict[message.user_ip].color" md-mini-fab class="message-avator " mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ member_dict[message.user_ip].user_ip }}" mdTooltipPosition="above">{{member_dict[message.user_ip].nickname.slice(0,1) }}</button>
-                                <md-card class="message-container" mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ message.msg_time | date: 'HH:mm' }}" mdTooltipPosition="left">
-                                    <p><span *ngFor="let msg_line of message.message.split('\n')">{{msg_line}}<br/></span></p>
+                                <button appWcdAvator [wcdAvatorColor]="member_dict[message.user_ip].color" md-mini-fab class="message-avator" mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ member_dict[message.user_ip].user_ip }}  {{ message.msg_time | date: 'HH:mm' }}" mdTooltipPosition="above">{{member_dict[message.user_ip].nickname.slice(0,1) }}</button>
+                                <md-card class="message-container">
+                                    <!-- <span style="display: none;">{{ message.message }}</span> -->
+                                    <!-- <span *ngFor="let msg_line of message.message.split('\n')">{{msg_line}}<br/></span> -->
+                                    <!-- <markdown [data]="testmsg"></markdown> -->
+                                    <div [data]="message.message" appMarkDown></div>
                                 </md-card>
                             </div>
                             <ng-template #selfMessage>
                                 <div class="inline-message-box" style="text-align: right;">
-                                    <md-card class="message-container" mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ message.msg_time | date: 'HH:mm' }}" mdTooltipPosition="left">
-                                        <p><span *ngFor="let msg_line of message.message.split('\n')">{{msg_line}}<br/></span></p>
+                                    <md-card class="message-container" style="text-align: initial">
+                                        <!-- <span style="display: none;">{{ message.message }}</span> -->
+                                        <!-- <span *ngFor="let msg_line of message.message.split( '\n')">{{msg_line}}<br/></span> -->
+                                        <!-- <markdown [data]="testmsg"></markdown> -->
+                                        <div [data]="message.message" appMarkDown></div>
                                     </md-card>
-                                    <button appWcdAvator [wcdAvatorColor]="member_dict[message.user_ip].color" md-mini-fab class="message-avator " mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ member_dict[message.user_ip].user_ip }}" mdTooltipPosition="above">{{member_dict[message.user_ip].nickname.slice(0,1) }}</button>
+                                    <button appWcdAvator [wcdAvatorColor]="member_dict[message.user_ip].color" md-mini-fab class="message-avator" mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ member_dict[message.user_ip].user_ip }} {{ message.msg_time | date: 'HH:mm' }}
+                                        " mdTooltipPosition="above">{{member_dict[message.user_ip].nickname.slice(0,1) }}</button>
                                 </div>
                             </ng-template>
                         </md-list-item>
@@ -43,10 +51,10 @@
                     <md-list-item *ngFor="let member of member_list">
                         <md-chip-list mdTooltip="{{ member.nickname }}: {{member.user_ip}}" mdTooltipPosition="after">
                             <md-chip color="primary" selected="true">{{ member.nickname }}</md-chip>
-                            <md-chip color="warn" *ngIf="chat_info['creator_ip'] === user_info['user_ip'] && user_info['user_ip'] !== member.user_ip" selected="true"><a (click)="deleteMember(member.user_ip)"><i class="fa fa-trash-o" aria-hidden="true" style="font-size: 18px"></i></a></md-chip>
+                            <md-chip color="warn" *ngIf="chat_info['creator_ip']===user_info['user_ip'] && user_info['user_ip'] !==member.user_ip" selected="true"><a (click)="deleteMember(member.user_ip)"><i class="fa fa-trash-o" aria-hidden="true" style="font-size: 18px"></i></a></md-chip>
                         </md-chip-list>
                     </md-list-item>
-                    <md-list-item (keydown)="queryMember($event)" *ngIf="chat_info['creator_ip'] === user_info['user_ip']">
+                    <md-list-item (keydown)="queryMember($event)" *ngIf="chat_info['creator_ip']===user_info['user_ip']">
                         <md-input-container class="long-input">
                             <md-placeholder>
                                 Enter Ip of user to add
@@ -55,7 +63,7 @@
                             <input mdInput [(ngModel)]="new_member" maxlength="15" />
                         </md-input-container>
                     </md-list-item>
-                    <md-list-item *ngIf="chat_info['creator_ip'] === user_info['user_ip']">
+                    <md-list-item *ngIf="chat_info['creator_ip']===user_info['user_ip']">
                         <button color="primary" md-raised-button (click)="queryMember(null)">Add Member</button>
                     </md-list-item>
                 </md-list>

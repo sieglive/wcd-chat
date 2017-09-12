@@ -21,18 +21,20 @@ import {
 } from '@angular/material';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AccountService } from '../service/guard.service';
-import { MessageService, WcdAvatorDirective } from '../service/message.service';
+import { MessageService, WcdAvatorDirective, AppMarkdownDirective } from '../service/message.service';
 import { SnackBarService } from '../service/snack-bar.service';
 import { WindowUtilsService } from '../service/window-utils.service';
 import { ToggleService } from '../service/toggle.service';
 import { DatePipe } from '@angular/common';
+import { MarkdownService } from '../service/markdown.service';
+
 
 @Component({
     selector: 'app-chat',
     templateUrl: './chat.component.html',
     styleUrls: ['./chat.component.scss']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, AfterViewInit {
 
     public user_info: object = {};
     public start_time = 0;
@@ -45,6 +47,7 @@ export class ChatComponent implements OnInit {
     public message = '';
     public message_list = [];
     public show_message: any;
+    public testmsg = '```      asd```';
     @ViewChild('chatShow') chat_show;
 
     constructor(
@@ -55,6 +58,7 @@ export class ChatComponent implements OnInit {
         private _snack_bar: SnackBarService,
         private _account: AccountService,
         private _message: MessageService,
+        private _markdown: MarkdownService,
         private _win_utils: WindowUtilsService,
         public toggle: ToggleService,
         public dialog: MdDialog,
@@ -83,6 +87,15 @@ export class ChatComponent implements OnInit {
         setInterval(() => { this.getMessageList(); }, 3000);
     }
 
+    ngAfterViewInit() {
+        console.log(this.message_list);
+    }
+
+    showMsg(value) {
+        console.log(value);
+        return value;
+    }
+
     getMessageList() {
         this._http.get(
             '/middle/message?chat_id=' + this.chat_id + '&start=' + this.start_time
@@ -98,6 +111,9 @@ export class ChatComponent implements OnInit {
 
                     this._message.info.subscribe(
                         value => {
+                            // if (value['msg_list']) {
+                            //     console.log(value['msg_list']);
+                            // }
                             const msg_list = value['msg_list'].sort((a, b) => {
                                 return a['msg_time'] - b['msg_time'];
                             });

@@ -15,6 +15,8 @@ import { SnackBarService } from './service/snack-bar.service';
 import { WindowUtilsService } from './service/window-utils.service';
 import { ErrorHandlerService } from './service/error-handler.service';
 import { ToggleService } from './service/toggle.service';
+import { MarkdownService } from './service/markdown.service';
+import { HighlightJsService } from 'angular2-highlight-js';
 
 const wcd_routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -48,6 +50,8 @@ const wcd_routes: Routes = [
         ChatGuard,
         AccountService,
         MessageService,
+        MarkdownService,
+        HighlightJsService,
         SnackBarService,
         WindowUtilsService,
         ErrorHandlerService,
