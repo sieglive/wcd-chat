@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 @Component({
-    selector: 'app-error',
+    selector: 'wcd-error',
     templateUrl: './error.component.html',
     styleUrls: ['./error.component.scss']
 })

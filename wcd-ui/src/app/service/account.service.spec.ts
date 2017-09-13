@@ -1,15 +1,15 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { GuardService } from './guard.service';
+import { AccountService } from './account.service';
 
 describe('GuardService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [GuardService]
+      providers: [AccountService]
     });
   });
 
-  it('should be created', inject([GuardService], (service: GuardService) => {
+  it('should be created', inject([AccountService], (service: AccountService) => {
     expect(service).toBeTruthy();
   }));
 });

@@ -3,7 +3,7 @@
         <md-grid-list cols="4" rowHeight="2:1">
             <md-grid-tile colspan="1" rowspan="1">
                 <div class="exit-button">
-                    <button color="primary" md-button (click)="exitChat()"><md-icon>arrow_back</md-icon> Back</button>
+                    <button md-button (click)="exitChat()"><md-icon>arrow_back</md-icon> Back</button>
                 </div>
                 <div class="vertical-container">
                     <div class="title-container">
@@ -24,7 +24,7 @@
                     <md-list>
                         <md-list-item *ngFor="let message of message_list">
                             <div *ngIf="message.user_ip !== user_info['user_ip'] ; else selfMessage" class="inline-message-box" style="text-align: left;">
-                                <button appWcdAvator [wcdAvatorColor]="member_dict[message.user_ip].color" md-mini-fab class="message-avator" mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ member_dict[message.user_ip].user_ip }}  {{ message.msg_time | date: 'HH:mm' }}" mdTooltipPosition="above">{{member_dict[message.user_ip].nickname.slice(0,1) }}</button>
+                                <button wcdAvator [avatorColor]="member_dict[message.user_ip].color" md-mini-fab class="message-avator" mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ member_dict[message.user_ip].user_ip }}  {{ message.msg_time | date: 'HH:mm' }}" mdTooltipPosition="above">{{member_dict[message.user_ip].nickname.slice(0,1) }}</button>
                                 <md-card class="message-container">
                                     <markdown [data]="message.message"></markdown>
                                 </md-card>
@@ -34,7 +34,7 @@
                                     <md-card class="message-container" style="text-align: initial">
                                         <markdown [data]="message.message"></markdown>
                                     </md-card>
-                                    <button appWcdAvator [wcdAvatorColor]="member_dict[message.user_ip].color" md-mini-fab class="message-avator" mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ member_dict[message.user_ip].user_ip }} {{ message.msg_time | date: 'HH:mm' }}
+                                    <button wcdAvator [avatorColor]="member_dict[message.user_ip].color" md-mini-fab class="message-avator" mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ member_dict[message.user_ip].user_ip }} {{ message.msg_time | date: 'HH:mm' }}
                                         " mdTooltipPosition="above">{{member_dict[message.user_ip].nickname.slice(0,1) }}</button>
                                 </div>
                             </ng-template>
@@ -46,7 +46,7 @@
                 <md-list class="member-container">
                     <md-list-item *ngFor="let member of member_list">
                         <md-chip-list mdTooltip="{{ member.nickname }}: {{member.user_ip}}" mdTooltipPosition="after">
-                            <md-chip color="primary" selected="true">{{ member.nickname }}</md-chip>
+                            <md-chip color="primary" selected="true" wcdAvator [avatorColor]="member.color">{{ member.nickname }}</md-chip>
                             <md-chip color="warn" *ngIf="chat_info['creator_ip']===user_info['user_ip'] && user_info['user_ip'] !==member.user_ip" selected="true"><a (click)="deleteMember(member.user_ip)"><i class="fa fa-trash-o" aria-hidden="true" style="font-size: 18px"></i></a></md-chip>
                         </md-chip-list>
                     </md-list-item>
@@ -76,7 +76,5 @@
                 </div>
             </md-grid-tile>
         </md-grid-list>
-
-
     </md-card>
 </div>
