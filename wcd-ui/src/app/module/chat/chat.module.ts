@@ -5,10 +5,10 @@ import { MaterialModule } from '@angular/material';
 import { RouterModule, Routes } from '@angular/router';
 import { MdDialog, MdDialogRef } from '@angular/material';
 
-import { MessageService } from 'app/service/message.service';
-import { AvatorDirective } from 'app/directive/avator.directive';
-import { MarkdownDirective } from 'app/directive/markdown.directive';
-import { MarkdownService } from 'app/service/markdown.service';
+import { MessageService } from 'service/message.service';
+import { AvatorDirective } from 'directive/avator.directive';
+import { MarkdownDirective } from 'directive/markdown.directive';
+import { MarkdownService } from 'service/markdown.service';
 import { ChatComponent, UserInfoComponent } from './chat.component';
 
 const chat_routes: Routes = [

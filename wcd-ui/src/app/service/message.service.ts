@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
 import { MarkdownService } from './markdown.service';
 
 @Injectable()

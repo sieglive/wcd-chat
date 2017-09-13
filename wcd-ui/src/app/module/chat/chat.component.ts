@@ -22,14 +22,14 @@ import {
 import { DatePipe } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { AccountService } from 'app/service/account.service';
-import { MessageService } from 'app/service/message.service';
-import { AvatorDirective } from 'app/directive/avator.directive';
-import { MarkdownDirective } from 'app/directive/markdown.directive';
-import { SnackBarService } from 'app/service/snack-bar.service';
-import { WindowUtilsService } from 'app/service/window-utils.service';
-import { ToggleService } from 'app/service/toggle.service';
-import { MarkdownService } from 'app/service/markdown.service';
+import { AccountService } from 'service/account.service';
+import { MessageService } from 'service/message.service';
+import { SnackBarService } from 'service/snack-bar.service';
+import { WindowUtilsService } from 'service/window-utils.service';
+import { ToggleService } from 'service/toggle.service';
+import { MarkdownService } from 'service/markdown.service';
+import { AvatorDirective } from 'directive/avator.directive';
+import { MarkdownDirective } from 'directive/markdown.directive';
 
 
 @Component({
