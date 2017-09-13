@@ -19,18 +19,21 @@ import {
     MD_DIALOG_DATA,
     MdSnackBar
 } from '@angular/material';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AccountService } from '../service/guard.service';
-import { MessageService, WcdAvatorDirective, AppMarkdownDirective } from '../service/message.service';
-import { SnackBarService } from '../service/snack-bar.service';
-import { WindowUtilsService } from '../service/window-utils.service';
-import { ToggleService } from '../service/toggle.service';
 import { DatePipe } from '@angular/common';
-import { MarkdownService } from '../service/markdown.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+import { AccountService } from 'app/service/account.service';
+import { MessageService } from 'app/service/message.service';
+import { AvatorDirective } from 'app/directive/avator.directive';
+import { MarkdownDirective } from 'app/directive/markdown.directive';
+import { SnackBarService } from 'app/service/snack-bar.service';
+import { WindowUtilsService } from 'app/service/window-utils.service';
+import { ToggleService } from 'app/service/toggle.service';
+import { MarkdownService } from 'app/service/markdown.service';
 
 
 @Component({
-    selector: 'app-chat',
+    selector: 'wcd-chat',
     templateUrl: './chat.component.html',
     styleUrls: ['./chat.component.scss']
 })
@@ -313,7 +316,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
 }
 
 @Component({
-    selector: 'app-userinfo',
+    selector: 'wcd-userinfo',
     templateUrl: './user-info.component.html',
 })
 export class UserInfoComponent {

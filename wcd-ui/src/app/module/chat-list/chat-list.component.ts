@@ -5,7 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import { Router, NavigationExtras } from '@angular/router';
 import { MdDialog, MdDialogRef, MD_DIALOG_DATA, MdSnackBar } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
-import { AccountService } from '../service/guard.service';
+import { AccountService } from 'app/service/account.service';
 
 import { DatePipe } from '@angular/common';
 
@@ -14,7 +14,7 @@ import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/map';
 
 @Component({
-    selector: 'app-chat-list',
+    selector: 'wcd-chat-list',
     templateUrl: './chat-list.component.html',
     styleUrls: ['./chat-list.component.scss']
 })

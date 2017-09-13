@@ -16,7 +16,7 @@
         "test": "test.ts",
         "tsconfig": "tsconfig.app.json",
         "testTsconfig": "tsconfig.spec.json",
-        "prefix": "app",
+        "prefix": "wcd",
         "styles": [
             "assets/scss/highlight.scss",
             "assets/scss/markdown.scss",

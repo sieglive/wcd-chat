@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { MaterialModule } from '@angular/material';
 
 import { LoginComponent } from './login.component';
+
 const login_routes: Routes = [
   { path: '', component: LoginComponent },
 ];

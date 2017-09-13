@@ -7,7 +7,7 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
 @Component({
-    selector: 'app-login',
+    selector: 'wcd-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss']
 })
