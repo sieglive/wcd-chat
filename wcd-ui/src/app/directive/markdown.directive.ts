@@ -1,5 +1,5 @@
 import { Directive, ElementRef, OnInit, Input } from '@angular/core';
-import { MarkdownService } from '../service/markdown.service';
+import { MarkdownService } from 'service/markdown.service';
 
 import 'prismjs/prism';
 import 'prismjs/components/prism-c';

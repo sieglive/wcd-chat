@@ -13,20 +13,20 @@ import { AddressGuard } from './guard/address.guard';
 import { NickGuard } from './guard/nick.guard';
 import { AuthGuard } from './guard/auth.guard';
 import { ChatGuard } from './guard/chat.guard';
-import { AccountService } from './service/account.service';
-import { MessageService } from './service/message.service';
-import { SnackBarService } from './service/snack-bar.service';
-import { WindowUtilsService } from './service/window-utils.service';
-import { ErrorHandlerService } from './service/error-handler.service';
-import { ToggleService } from './service/toggle.service';
-import { MarkdownService } from './service/markdown.service';
+import { AccountService } from 'service/account.service';
+import { MessageService } from 'service/message.service';
+import { SnackBarService } from 'service/snack-bar.service';
+import { WindowUtilsService } from 'service/window-utils.service';
+import { ErrorHandlerService } from 'service/error-handler.service';
+import { ToggleService } from 'service/toggle.service';
+import { MarkdownService } from 'service/markdown.service';
 
 const wcd_routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
-    { path: 'login', loadChildren: 'app/module/login/login.module#LoginModule', canActivate: [AddressGuard] },
-    { path: 'chat/:chat_id', loadChildren: 'app/module/chat/chat.module#ChatModule', canActivate: [AddressGuard, ChatGuard] },
-    { path: 'chat-list', loadChildren: 'app/module/chat-list/chat-list.module#ChatListModule', canActivate: [AddressGuard, AuthGuard] },
-    { path: 'error', loadChildren: 'app/module/error/error.module#ErrorModule' },
+    { path: 'login', loadChildren: 'module/login/login.module#LoginModule', canActivate: [AddressGuard] },
+    { path: 'chat/:chat_id', loadChildren: 'module/chat/chat.module#ChatModule', canActivate: [AddressGuard, ChatGuard] },
+    { path: 'chat-list', loadChildren: 'module/chat-list/chat-list.module#ChatListModule', canActivate: [AddressGuard, AuthGuard] },
+    { path: 'error', loadChildren: 'module/error/error.module#ErrorModule' },
     { path: '**', redirectTo: '/error' }
 ];
 

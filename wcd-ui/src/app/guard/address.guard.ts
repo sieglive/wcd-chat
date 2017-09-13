@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import { AccountService } from '../service/account.service';
+import { AccountService } from 'service/account.service';
 
 @Injectable()
 export class AddressGuard implements CanActivate {

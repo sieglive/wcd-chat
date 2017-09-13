@@ -5,13 +5,13 @@ import { Observable } from 'rxjs/Observable';
 import { Router, NavigationExtras } from '@angular/router';
 import { MdDialog, MdDialogRef, MD_DIALOG_DATA, MdSnackBar } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
-import { AccountService } from 'app/service/account.service';
-
 import { DatePipe } from '@angular/common';
 
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/map';
+
+import { AccountService } from 'service/account.service';
 
 @Component({
     selector: 'wcd-chat-list',
@@ -243,7 +243,7 @@ export class ChatListComponent implements OnInit {
 
 
 @Component({
-    selector: 'app-userinfo',
+    selector: 'wcd-userinfo',
     templateUrl: './userinfo.component.html',
     styleUrls: ['./chat-list.component.scss']
 })
@@ -256,7 +256,7 @@ export class UserinfoComponent {
 }
 
 @Component({
-    selector: 'app-password',
+    selector: 'wcd-password',
     templateUrl: './password.component.html',
     styleUrls: ['./chat-list.component.scss']
 })
