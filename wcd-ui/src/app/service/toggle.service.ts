@@ -27,7 +27,11 @@ export class ToggleService {
     fixStateOfshowNotification() {
         this._http.get('/inner/get-notice-toggle').subscribe(
             data => {
-                this.showNotice = data['notice'];
+                if (data) {
+                    this.showNotice = data['notice'];
+                } else {
+                    this.showNotice = true;
+                }
             });
     }
 

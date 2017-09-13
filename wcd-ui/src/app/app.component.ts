@@ -14,21 +14,6 @@ export class AppComponent implements OnInit {
         private _toggle: ToggleService
     ) { }
 
-    urlB64ToUint8Array(base64String) {
-        const padding = '='.repeat((4 - base64String.length % 4) % 4);
-        const base64 = (base64String + padding)
-            .replace(/\-/g, '+')
-            .replace(/_/g, '/');
-
-        const rawData = window.atob(base64);
-        const outputArray = new Uint8Array(rawData.length);
-
-        for (let i = 0; i < rawData.length; ++i) {
-            outputArray[i] = rawData.charCodeAt(i);
-        }
-        return outputArray;
-    }
-
     ngOnInit() {
         if (Notification && Notification['permission'] !== 'granted') {
             Notification.requestPermission(
@@ -55,16 +40,6 @@ export class AppComponent implements OnInit {
                     scope: '/'
                 }).then(
                 registration => {
-                    const publicKey = 'BGQA2WKutj-hCwIWzS576InMsfDPVSDKk-dQENMqykDe-UDKdNYuSBvoTEWmbpzRvrrcYZxKI5LuBZutAfo8OTo';
-                    const applicationServerKey = this.urlB64ToUint8Array(publicKey);
-                    registration.pushManager.subscribe(
-                        {
-                            userVisibleOnly: true,
-                            applicationServerKey: applicationServerKey
-                        }
-                    ).then(
-                        PushSubscription => {
-                        });
                     return true;
                 }).catch(
                 error => { }

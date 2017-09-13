@@ -1,17 +1,26 @@
-console.log('out service worker', self);
-
 var showNotification = true;
 
 self.addEventListener('install', function(event) {
+    self.skipWaiting();
+    console.log(self);
     // console.log('Install event:', event);
 });
 
 self.addEventListener('activate', function(event) {
+    self.skipWaiting();
+    const publicKey = 'BGQA2WKutj-hCwIWzS576InMsfDPVSDKk-dQENMqykDe-UDKdNYuSBvoTEWmbpzRvrrcYZxKI5LuBZutAfo8OTo';
+    const applicationServerKey = urlB64ToUint8Array(publicKey);
+    self.registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: applicationServerKey
+    }).then(
+        PushSubscription => {});
     // console.log('Activate event:', event);
 });
 
 self.addEventListener('push', function(event) {
     console.log('Push event:', event);
+    console.log(self);
     const options = {
         dir: 'auto',
         lang: 'utf-8',
@@ -28,50 +37,64 @@ self.addEventListener('fetch', event => {
     if (fragement.length > 1) {
         fragement = fragement.slice(0, 1).concat(fragement[1].split('/'));
     }
-    if (fragement[2] === 'inner') {
-        if (fragement[3] === 'callnotification' && showNotification) {
-            event.respondWith(
-                new Response('{"asd": 123}', {
-                    headers: { 'Content-type': 'application/json' }
-                }));
-            const notice = JSON.parse(decodeURIComponent(fragement.slice(4).join('')));
-            const options = {
-                dir: 'auto',
-                lang: 'utf-8',
-                badge: '/assets/xiaohei.png',
-                icon: '/assets/xiaohei.png',
-                body: notice['message'].join('\n'),
-                data: notice
-            };
-            self.registration.showNotification(notice['title'], options);
-        } else if (fragement[3] === 'set-notice-toggle') {
-            const notice = JSON.parse(decodeURIComponent(fragement.slice(4).join('')));
-            showNotification = notice.notice;
+    switch (fragement[2]) {
+        case 'inner':
+            let res_data = {};
+            switch (fragement[3]) {
+                case 'callnotification':
+                    if (showNotification) {
+                        event.respondWith(
+                            new Response('{"asd": 123}', {
+                                headers: { 'Content-type': 'application/json' }
+                            }));
+                        const notice = JSON.parse(decodeURIComponent(fragement.slice(4).join('')));
+                        const options = {
+                            dir: 'auto',
+                            lang: 'utf-8',
+                            badge: '/assets/xiaohei.png',
+                            icon: '/assets/xiaohei.png',
+                            body: notice['message'].join('\n'),
+                            data: notice
+                        };
+                        self.registration.showNotification(notice['title'], options);
+                    }
+                    break;
 
-            const res_data = {
-                notice: showNotification
-            };
-            const res_str = JSON.stringify(res_data);
+                case 'set-notice-toggle':
+                    const notice = JSON.parse(decodeURIComponent(fragement.slice(4).join('')));
+                    showNotification = notice.notice;
 
-            event.respondWith(
-                new Response(res_str, {
-                    headers: { 'Content-type': 'application/json' }
-                }));
-            console.log(showNotification);
-        } else if (fragement[3] === 'get-notice-toggle') {
-            const res_data = {
-                notice: showNotification
-            };
-            const res_str = JSON.stringify(res_data);
+                    res_data = {
+                        notice: showNotification
+                    };
 
-            event.respondWith(
-                new Response(res_str, {
-                    headers: { 'Content-type': 'application/json' }
-                }));
-            console.log(showNotification);
-        }
+                    event.respondWith(
+                        new Response(JSON.stringify(res_data), {
+                            headers: { 'Content-type': 'application/json' }
+                        }));
+                    console.log(showNotification);
+                    break;
+
+                case 'get-notice-toggle':
+                    res_data = {
+                        notice: showNotification
+                    };
+
+                    event.respondWith(
+                        new Response(JSON.stringify(res_data), {
+                            headers: { 'Content-type': 'application/json' }
+                        }));
+                    console.log(showNotification);
+                    break;
+
+                default:
+                    break;
+            }
+            break;
+
+        case 'middle':
+            break;
     }
-
 });
 
 self.addEventListener('notificationclick', function(event) {
@@ -121,6 +144,21 @@ function matchFocus(focus_list, match_list) {
         }
     }
     return true;
+}
+
+function urlB64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+
+    const rawData = atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
 }
 
 console.log('service worker');
