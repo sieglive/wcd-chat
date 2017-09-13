@@ -5,7 +5,19 @@
 }
 
 .chat-room {
-    .chat-title {
+    .exit-button {
+        position: absolute;
+        top: 0;
+        left: 0;
+        md-icon {
+            position: relative;
+            top: -1px;
+        }
+    }
+    .vertical-container::before {
+        content: '';
+        display: inline-block;
+        vertical-align: middle;
         width: 100%;
         height: 100%;
         .content {
@@ -73,7 +85,7 @@
                 display: inline-block;
                 vertical-align: middle;
                 word-break: break-all;
-                white-space: normal;
+                // white-space: pre;
                 margin: 5px;
                 padding: 5px;
                 padding-left: 15px;
