@@ -5,6 +5,15 @@
 }
 
 .chat-room {
+    .exit-button {
+        position: absolute;
+        top: 0;
+        left: 0;
+        md-icon {
+            position: relative;
+            top: -1px;
+        }
+    }
     .vertical-container::before {
         content: '';
         display: inline-block;

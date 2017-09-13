@@ -18,12 +18,11 @@
         "testTsconfig": "tsconfig.spec.json",
         "prefix": "app",
         "styles": [
-            "assets/css/monokai_sublime.min.scss",
+            "assets/scss/highlight.scss",
+            "assets/scss/markdown.scss",
             "styles.scss"
         ],
-        "scripts": [
-            "assets/js/highlight.min.js"
-        ],
+        "scripts": [],
         "environmentSource": "environments/environment.ts",
         "environments": {
             "dev": "environments/environment.ts",

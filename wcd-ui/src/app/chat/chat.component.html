@@ -2,6 +2,9 @@
     <md-card>
         <md-grid-list cols="4" rowHeight="2:1">
             <md-grid-tile colspan="1" rowspan="1">
+                <div class="exit-button">
+                    <button color="primary" md-button (click)="exitChat()"><md-icon>arrow_back</md-icon> Back</button>
+                </div>
                 <div class="vertical-container">
                     <div class="title-container">
                         <div class="title">
@@ -9,7 +12,6 @@
                         </div>
                         <div class="content">
                             Chat Room
-
                         </div>
                         <md-slide-toggle [checked]="toggle.showNotification" (change)="setNotification($event)">
                             Notification
@@ -24,19 +26,13 @@
                             <div *ngIf="message.user_ip !== user_info['user_ip'] ; else selfMessage" class="inline-message-box" style="text-align: left;">
                                 <button appWcdAvator [wcdAvatorColor]="member_dict[message.user_ip].color" md-mini-fab class="message-avator" mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ member_dict[message.user_ip].user_ip }}  {{ message.msg_time | date: 'HH:mm' }}" mdTooltipPosition="above">{{member_dict[message.user_ip].nickname.slice(0,1) }}</button>
                                 <md-card class="message-container">
-                                    <!-- <span style="display: none;">{{ message.message }}</span> -->
-                                    <!-- <span *ngFor="let msg_line of message.message.split('\n')">{{msg_line}}<br/></span> -->
-                                    <!-- <markdown [data]="testmsg"></markdown> -->
-                                    <div [data]="message.message" appMarkDown></div>
+                                    <markdown [data]="message.message"></markdown>
                                 </md-card>
                             </div>
                             <ng-template #selfMessage>
                                 <div class="inline-message-box" style="text-align: right;">
                                     <md-card class="message-container" style="text-align: initial">
-                                        <!-- <span style="display: none;">{{ message.message }}</span> -->
-                                        <!-- <span *ngFor="let msg_line of message.message.split( '\n')">{{msg_line}}<br/></span> -->
-                                        <!-- <markdown [data]="testmsg"></markdown> -->
-                                        <div [data]="message.message" appMarkDown></div>
+                                        <markdown [data]="message.message"></markdown>
                                     </md-card>
                                     <button appWcdAvator [wcdAvatorColor]="member_dict[message.user_ip].color" md-mini-fab class="message-avator" mdTooltip="{{ member_dict[message.user_ip].nickname }}: {{ member_dict[message.user_ip].user_ip }} {{ message.msg_time | date: 'HH:mm' }}
                                         " mdTooltipPosition="above">{{member_dict[message.user_ip].nickname.slice(0,1) }}</button>
@@ -71,6 +67,10 @@
             <md-grid-tile colspan="3" (keydown)="sendMessage($event)">
                 <div class="chat-input">
                     <md-input-container>
+                        <md-placeholder>
+                            Press "Ctrl+Enter" to send message
+                            <md-icon>mode_edit</md-icon>
+                        </md-placeholder>
                         <textarea mdInput mdTextareaAutosize mdAutosizeMinRows="5" mdAutosizeMaxRows="5" [(ngModel)]="message"></textarea>
                     </md-input-container>
                 </div>

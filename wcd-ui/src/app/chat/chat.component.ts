@@ -47,7 +47,6 @@ export class ChatComponent implements OnInit, AfterViewInit {
     public message = '';
     public message_list = [];
     public show_message: any;
-    public testmsg = '```      asd```';
     @ViewChild('chatShow') chat_show;
 
     constructor(
@@ -94,6 +93,10 @@ export class ChatComponent implements OnInit, AfterViewInit {
     showMsg(value) {
         console.log(value);
         return value;
+    }
+
+    exitChat() {
+        this._router.navigate(['/chat-list']);
     }
 
     getMessageList() {
@@ -272,9 +275,8 @@ export class ChatComponent implements OnInit, AfterViewInit {
     sendMessage(event) {
         if (event && event.key !== 'Enter') {
             return event;
-        } else if (event && event.key === 'Enter' && event.altKey) {
-            this.message += '\n';
-            return false;
+        } else if (event && !event.ctrlKey) {
+            return event;
         }
         if (!this.message) {
             return false;
